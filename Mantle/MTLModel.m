@@ -6,11 +6,15 @@
 //  Copyright (c) 2012 GitHub. All rights reserved.
 //
 
-#import "NSError+MTLModelException.h"
 #import "MTLModel.h"
 #import "MTLPropertyAttributes.h"
 #import "MTLReflection.h"
 #import <objc/runtime.h>
+
+NSString * const MTLModelErrorDomain = @"MTLModelErrorDomain";
+NSString * const MTLModelThrownExceptionErrorKey = @"MTLModelThrownException";
+
+NSInteger const MTLModelErrorExceptionThrown;
 
 // Used to cache the reflection performed in +propertyKeys.
 static void *MTLModelCachedPropertyKeysKey = &MTLModelCachedPropertyKeysKey;
@@ -51,7 +55,11 @@ static BOOL MTLValidateAndSetValue(id obj, NSString *key, id value, BOOL forceUp
 		@throw ex;
 		#else
 		if (error != NULL) {
-			*error = [NSError mtl_modelErrorWithException:ex];
+			*error = [NSError errorWithDomain:MTLModelErrorDomain code:MTLModelErrorExceptionThrown userInfo:@{
+				NSLocalizedDescriptionKey: exception.description,
+				NSLocalizedFailureReasonErrorKey: exception.reason,
+				MTLModelThrownExceptionErrorKey: exception
+			}];
 		}
 
 		return NO;

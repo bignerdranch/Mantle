@@ -8,6 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+// The domain for errors originating from MTLModel.
+extern NSString *const MTLModelErrorDomain;
+
+// An exception was thrown and caught.
+extern NSInteger const MTLModelErrorExceptionThrown;
+
+// User-info for an associated NSException that was caught.
+extern NSString *const MTLModelThrownExceptionErrorKey;
+
 // An abstract base class for model objects, using reflection to provide
 // sensible default behaviors.
 //
