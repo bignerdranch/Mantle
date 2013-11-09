@@ -17,10 +17,6 @@
 
 @implementation NSArray (MTLManipulationAdditions)
 
-- (id)mtl_firstObject {
-	return self.firstObject;
-}
-
 - (instancetype)mtl_arrayByRemovingObject:(id)object {
 	NSMutableArray *result = [self mutableCopy];
 	[result removeObject:object];
