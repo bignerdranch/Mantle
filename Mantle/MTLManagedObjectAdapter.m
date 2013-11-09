@@ -9,7 +9,6 @@
 #import "MTLManagedObjectAdapter.h"
 #import "MTLModel.h"
 #import "MTLReflection.h"
-#import "NSArray+MTLManipulationAdditions.h"
 
 NSString * const MTLManagedObjectAdapterErrorDomain = @"MTLManagedObjectAdapterErrorDomain";
 const NSInteger MTLManagedObjectAdapterErrorNoClassFound = 2;

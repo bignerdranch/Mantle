@@ -38,9 +38,6 @@
 		DBCBBFB3182D904A0052D6D7 /* MTLValueTransformer.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCBBFB1182D904A0052D6D7 /* MTLValueTransformer.h */; };
 		DBCBBFB4182D904A0052D6D7 /* MTLValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFB2182D904A0052D6D7 /* MTLValueTransformer.m */; };
 		DBCBBFB5182D904A0052D6D7 /* MTLValueTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFB2182D904A0052D6D7 /* MTLValueTransformer.m */; };
-		DBCBBFC3182D90710052D6D7 /* NSArray+MTLManipulationAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCBBFB7182D90710052D6D7 /* NSArray+MTLManipulationAdditions.h */; };
-		DBCBBFC4182D90710052D6D7 /* NSArray+MTLManipulationAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFB8182D90710052D6D7 /* NSArray+MTLManipulationAdditions.m */; };
-		DBCBBFC5182D90710052D6D7 /* NSArray+MTLManipulationAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFB8182D90710052D6D7 /* NSArray+MTLManipulationAdditions.m */; };
 		DBCBBFC6182D90710052D6D7 /* NSError+MTLModelException.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCBBFB9182D90710052D6D7 /* NSError+MTLModelException.h */; };
 		DBCBBFC7182D90710052D6D7 /* NSError+MTLModelException.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFBA182D90710052D6D7 /* NSError+MTLModelException.m */; };
 		DBCBBFC8182D90710052D6D7 /* NSError+MTLModelException.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFBA182D90710052D6D7 /* NSError+MTLModelException.m */; };
@@ -50,8 +47,6 @@
 		DBCBBFD2182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCBBFC1182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.h */; };
 		DBCBBFD3182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFC2182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.m */; };
 		DBCBBFD4182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFC2182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.m */; };
-		DBCBBFD7182D90B10052D6D7 /* MTLArrayManipulationTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFD6182D90B10052D6D7 /* MTLArrayManipulationTestCase.m */; };
-		DBCBBFD8182D90B10052D6D7 /* MTLArrayManipulationTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFD6182D90B10052D6D7 /* MTLArrayManipulationTestCase.m */; };
 		DBCBBFDD182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFDC182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m */; };
 		DBCBBFDE182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFDC182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m */; };
 		DBCBBFE6182D95B00052D6D7 /* TestModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFE5182D95B00052D6D7 /* TestModel.xcdatamodel */; };
@@ -145,15 +140,12 @@
 		DBCBBFA9182D903C0052D6D7 /* MTLManagedObjectAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTLManagedObjectAdapter.m; sourceTree = "<group>"; };
 		DBCBBFB1182D904A0052D6D7 /* MTLValueTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTLValueTransformer.h; sourceTree = "<group>"; };
 		DBCBBFB2182D904A0052D6D7 /* MTLValueTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTLValueTransformer.m; sourceTree = "<group>"; };
-		DBCBBFB7182D90710052D6D7 /* NSArray+MTLManipulationAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+MTLManipulationAdditions.h"; sourceTree = "<group>"; };
-		DBCBBFB8182D90710052D6D7 /* NSArray+MTLManipulationAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+MTLManipulationAdditions.m"; sourceTree = "<group>"; };
 		DBCBBFB9182D90710052D6D7 /* NSError+MTLModelException.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+MTLModelException.h"; sourceTree = "<group>"; };
 		DBCBBFBA182D90710052D6D7 /* NSError+MTLModelException.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+MTLModelException.m"; sourceTree = "<group>"; };
 		DBCBBFBB182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+MTLManipulationAdditions.h"; sourceTree = "<group>"; };
 		DBCBBFBC182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+MTLManipulationAdditions.m"; sourceTree = "<group>"; };
 		DBCBBFC1182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSValueTransformer+MTLPredefinedTransformerAdditions.h"; sourceTree = "<group>"; };
 		DBCBBFC2182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSValueTransformer+MTLPredefinedTransformerAdditions.m"; sourceTree = "<group>"; };
-		DBCBBFD6182D90B10052D6D7 /* MTLArrayManipulationTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTLArrayManipulationTestCase.m; sourceTree = "<group>"; };
 		DBCBBFDC182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTLDictionaryManipulationTestCase.m; sourceTree = "<group>"; };
 		DBCBBFE5182D95B00052D6D7 /* TestModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TestModel.xcdatamodel; sourceTree = "<group>"; };
 		DBCBBFEA182D95CC0052D6D7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/CoreData.framework; sourceTree = DEVELOPER_DIR; };
@@ -276,7 +268,6 @@
 		DBCBBF54182D8F7C0052D6D7 /* MantleTests */ = {
 			isa = PBXGroup;
 			children = (
-				DBCBBFD6182D90B10052D6D7 /* MTLArrayManipulationTestCase.m */,
 				DBCBBFDC182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m */,
 				DBCBBFFC182D96810052D6D7 /* MTLErrorModelExceptionTestCase.m */,
 				DBCBBFFF182D97010052D6D7 /* MTLJSONAdapterTestCase.m */,
@@ -358,8 +349,6 @@
 		DBCBBFD5182D90740052D6D7 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				DBCBBFB7182D90710052D6D7 /* NSArray+MTLManipulationAdditions.h */,
-				DBCBBFB8182D90710052D6D7 /* NSArray+MTLManipulationAdditions.m */,
 				DBCBBFB9182D90710052D6D7 /* NSError+MTLModelException.h */,
 				DBCBBFBA182D90710052D6D7 /* NSError+MTLModelException.m */,
 				DBCBBFBB182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.h */,
@@ -377,7 +366,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBCBBFC3182D90710052D6D7 /* NSArray+MTLManipulationAdditions.h in Headers */,
 				DBCBBFB3182D904A0052D6D7 /* MTLValueTransformer.h in Headers */,
 				DBCBBFC6182D90710052D6D7 /* NSError+MTLModelException.h in Headers */,
 				DBCBBFAA182D903C0052D6D7 /* MTLJSONAdapter.h in Headers */,
@@ -534,7 +522,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBCBBFA0182D902E0052D6D7 /* MTLReflection.m in Sources */,
-				DBCBBFC4182D90710052D6D7 /* NSArray+MTLManipulationAdditions.m in Sources */,
 				DBCBBF9D182D902E0052D6D7 /* MTLModel+NSCoding.m in Sources */,
 				DBCBBFCA182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.m in Sources */,
 				DBCBBFAB182D903C0052D6D7 /* MTLJSONAdapter.m in Sources */,
@@ -556,7 +543,6 @@
 				DBCBBFFD182D96810052D6D7 /* MTLErrorModelExceptionTestCase.m in Sources */,
 				DBCBC012182DAD6C0052D6D7 /* MTLModelNSCodingTestCase.m in Sources */,
 				DBCBC006182DA65B0052D6D7 /* MTLModelValidationTestCase.m in Sources */,
-				DBCBBFD7182D90B10052D6D7 /* MTLArrayManipulationTestCase.m in Sources */,
 				DBCBBFDD182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m in Sources */,
 				DBCBC015182DAD790052D6D7 /* MTLManagedObjectAdapterTestCase.m in Sources */,
 				DBCBBFF6182D95D80052D6D7 /* MTLCoreDataTestModels.m in Sources */,
@@ -574,7 +560,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBCBBFA1182D902E0052D6D7 /* MTLReflection.m in Sources */,
-				DBCBBFC5182D90710052D6D7 /* NSArray+MTLManipulationAdditions.m in Sources */,
 				DBCBBF9E182D902E0052D6D7 /* MTLModel+NSCoding.m in Sources */,
 				DBCBBFCB182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.m in Sources */,
 				DBCBBFAC182D903C0052D6D7 /* MTLJSONAdapter.m in Sources */,
@@ -596,7 +581,6 @@
 				DBCBBFFE182D96810052D6D7 /* MTLErrorModelExceptionTestCase.m in Sources */,
 				DBCBC013182DAD6C0052D6D7 /* MTLModelNSCodingTestCase.m in Sources */,
 				DBCBC007182DA65B0052D6D7 /* MTLModelValidationTestCase.m in Sources */,
-				DBCBBFD8182D90B10052D6D7 /* MTLArrayManipulationTestCase.m in Sources */,
 				DBCBBFDE182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m in Sources */,
 				DBCBC016182DAD790052D6D7 /* MTLManagedObjectAdapterTestCase.m in Sources */,
 				DBCBBFF7182D95D80052D6D7 /* MTLCoreDataTestModels.m in Sources */,
