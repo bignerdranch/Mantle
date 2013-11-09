@@ -104,17 +104,6 @@ static NSUInteger modelVersion = 1;
 	return [super decodeValueForKey:key withCoder:coder modelVersion:fromVersion];
 }
 
-+ (NSDictionary *)dictionaryValueFromArchivedExternalRepresentation:(NSDictionary *)externalRepresentation version:(NSUInteger)fromVersion {
-	NSParameterAssert(externalRepresentation != nil);
-	NSParameterAssert(fromVersion == 1);
-
-	return @{
-		@"name": externalRepresentation[@"username"],
-		@"nestedName": externalRepresentation[@"nested"][@"name"],
-		@"count": @([externalRepresentation[@"count"] integerValue])
-	};
-}
-
 #pragma mark Merging
 
 - (void)mergeCountFromModel:(MTLTestModel *)model {

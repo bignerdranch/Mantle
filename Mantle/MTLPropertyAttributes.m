@@ -27,7 +27,7 @@
 
 @implementation MTLPropertyAttributes
 
-+ (void)enumerateProperties:(NSSet *)propertyKeys ofClass:(Class)cls usingBlock:(void (^)(MTLPropertyAttributes *attributes))block
++ (void)enumerateProperties:(id <NSFastEnumeration>)propertyKeys ofClass:(Class)cls usingBlock:(void (^)(MTLPropertyAttributes *attributes))block
 {
 	for (NSString *propertyName in propertyKeys) {
 		objc_property_t property = class_getProperty(cls, propertyName.UTF8String);
@@ -40,6 +40,7 @@
 
 + (void)enumeratePropertiesOfClass:(Class)cls usingBlock:(void (^)(MTLPropertyAttributes *attributes, BOOL *stop))block
 {
+	NSParameterAssert(cls != [NSObject class] && [cls superclass] != NULL);
 	[self enumeratePropertiesOfClass:cls recursiveUntilClass:NULL usingBlock:block];
 }
 

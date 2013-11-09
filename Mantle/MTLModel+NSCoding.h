@@ -110,19 +110,3 @@ typedef enum : NSUInteger {
 + (NSUInteger)modelVersion;
 
 @end
-
-// This method must be overridden to support archives created by older versions
-// of Mantle (before the `MTLModel+NSCoding` interface existed).
-@interface MTLModel (OldArchiveSupport)
-
-// Converts an archived external representation to a dictionary suitable for
-// passing to -initWithDictionary:.
-//
-// externalRepresentation - The decoded external representation of the receiver.
-// fromVersion            - The model version at the time the external
-//                          representation was encoded.
-//
-// Returns nil by default, indicating that conversion failed.
-+ (NSDictionary *)dictionaryValueFromArchivedExternalRepresentation:(NSDictionary *)externalRepresentation version:(NSUInteger)fromVersion;
-
-@end

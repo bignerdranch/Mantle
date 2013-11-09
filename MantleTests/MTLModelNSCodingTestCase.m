@@ -158,24 +158,4 @@
 	XCTAssertEqual(unarchivedModel.count, (NSUInteger)5, @"%@", desc);
 }
 
-- (void)testExternalRepresentation
-{
-	NSString *desc = @"archiving should unarchive an external representation from the old model format";
-
-	NSURL *archiveURL = [[NSBundle bundleForClass:self.class] URLForResource:@"MTLTestModel-OldArchive" withExtension:@"plist"];
-	XCTAssertNotNil(archiveURL, @"%@", desc);
-
-	MTLTestModel *unarchivedModel = [NSKeyedUnarchiver unarchiveObjectWithFile:archiveURL.path];
-	XCTAssertNotNil(unarchivedModel, @"%@", desc);
-
-	NSDictionary *expectedValues = @{
-		@"name": @"foobar",
-		@"count": @5,
-		@"nestedName": @"fuzzbuzz",
-		@"weakModel": NSNull.null,
-	};
-
-	XCTAssertEqualObjects(unarchivedModel.dictionaryValue, expectedValues, @"%@", desc);
-}
-
 @end

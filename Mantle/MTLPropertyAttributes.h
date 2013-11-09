@@ -41,7 +41,7 @@ typedef NS_ENUM(int16_t, MTLPropertyMemoryPolicy) {
 /**
  Enumerates given property attributes of the given class.
  */
-+ (void)enumerateProperties:(NSSet *)propertyNames ofClass:(Class)cls usingBlock:(void (^)(MTLPropertyAttributes *attributes))block;
++ (void)enumerateProperties:(id <NSFastEnumeration>)propertyNames ofClass:(Class)cls usingBlock:(void (^)(MTLPropertyAttributes *attributes))block;
 
 /**
  Enumerates all properties of the given class' hierarchy, starting at the given

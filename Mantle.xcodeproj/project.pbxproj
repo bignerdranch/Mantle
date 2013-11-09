@@ -57,8 +57,6 @@
 		DBCBBFD8182D90B10052D6D7 /* MTLArrayManipulationTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFD6182D90B10052D6D7 /* MTLArrayManipulationTestCase.m */; };
 		DBCBBFDD182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFDC182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m */; };
 		DBCBBFDE182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFDC182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m */; };
-		DBCBBFE3182D95AB0052D6D7 /* MTLTestModel-OldArchive.plist in Resources */ = {isa = PBXBuildFile; fileRef = DBCBBFE2182D95AB0052D6D7 /* MTLTestModel-OldArchive.plist */; };
-		DBCBBFE4182D95AB0052D6D7 /* MTLTestModel-OldArchive.plist in Resources */ = {isa = PBXBuildFile; fileRef = DBCBBFE2182D95AB0052D6D7 /* MTLTestModel-OldArchive.plist */; };
 		DBCBBFE6182D95B00052D6D7 /* TestModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFE5182D95B00052D6D7 /* TestModel.xcdatamodel */; };
 		DBCBBFE7182D95B00052D6D7 /* TestModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBFE5182D95B00052D6D7 /* TestModel.xcdatamodel */; };
 		DBCBBFE8182D95BC0052D6D7 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBCBBF6C182D8FAA0052D6D7 /* CoreData.framework */; };
@@ -164,7 +162,6 @@
 		DBCBBFC2182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSValueTransformer+MTLPredefinedTransformerAdditions.m"; sourceTree = "<group>"; };
 		DBCBBFD6182D90B10052D6D7 /* MTLArrayManipulationTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTLArrayManipulationTestCase.m; sourceTree = "<group>"; };
 		DBCBBFDC182D94CA0052D6D7 /* MTLDictionaryManipulationTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTLDictionaryManipulationTestCase.m; sourceTree = "<group>"; };
-		DBCBBFE2182D95AB0052D6D7 /* MTLTestModel-OldArchive.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = "MTLTestModel-OldArchive.plist"; sourceTree = "<group>"; };
 		DBCBBFE5182D95B00052D6D7 /* TestModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TestModel.xcdatamodel; sourceTree = "<group>"; };
 		DBCBBFEA182D95CC0052D6D7 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/CoreData.framework; sourceTree = DEVELOPER_DIR; };
 		DBCBBFEC182D95D80052D6D7 /* MTLCoreDataObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTLCoreDataObjects.h; sourceTree = "<group>"; };
@@ -315,7 +312,6 @@
 				DBCBBFF2182D95D80052D6D7 /* MTLTestNotificationObserver.h */,
 				DBCBBFF3182D95D80052D6D7 /* MTLTestNotificationObserver.m */,
 				DBCBBF56182D8F7C0052D6D7 /* MantleTests-Info.plist */,
-				DBCBBFE2182D95AB0052D6D7 /* MTLTestModel-OldArchive.plist */,
 				DBCBBFE5182D95B00052D6D7 /* TestModel.xcdatamodel */,
 			);
 			name = "Supporting Files";
@@ -540,7 +536,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBCBBFE4182D95AB0052D6D7 /* MTLTestModel-OldArchive.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
