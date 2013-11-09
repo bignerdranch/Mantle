@@ -13,5 +13,4 @@
 #import <Mantle/MTLValueTransformer.h>
 #import <Mantle/NSArray+MTLManipulationAdditions.h>
 #import <Mantle/NSDictionary+MTLManipulationAdditions.h>
-#import <Mantle/NSValueTransformer+MTLInversionAdditions.h>
 #import <Mantle/NSValueTransformer+MTLPredefinedTransformerAdditions.h>
