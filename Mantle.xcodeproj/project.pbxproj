@@ -23,9 +23,6 @@
 		DBCBBF9C182D902E0052D6D7 /* MTLModel+NSCoding.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCBBF93182D902E0052D6D7 /* MTLModel+NSCoding.h */; };
 		DBCBBF9D182D902E0052D6D7 /* MTLModel+NSCoding.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBF94182D902E0052D6D7 /* MTLModel+NSCoding.m */; };
 		DBCBBF9E182D902E0052D6D7 /* MTLModel+NSCoding.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBF94182D902E0052D6D7 /* MTLModel+NSCoding.m */; };
-		DBCBBF9F182D902E0052D6D7 /* MTLReflection.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCBBF95182D902E0052D6D7 /* MTLReflection.h */; };
-		DBCBBFA0182D902E0052D6D7 /* MTLReflection.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBF96182D902E0052D6D7 /* MTLReflection.m */; };
-		DBCBBFA1182D902E0052D6D7 /* MTLReflection.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBF96182D902E0052D6D7 /* MTLReflection.m */; };
 		DBCBBFA2182D902E0052D6D7 /* MTLPropertyAttributes.h in Headers */ = {isa = PBXBuildFile; fileRef = DBCBBF97182D902E0052D6D7 /* MTLPropertyAttributes.h */; };
 		DBCBBFA3182D902E0052D6D7 /* MTLPropertyAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBF98182D902E0052D6D7 /* MTLPropertyAttributes.m */; };
 		DBCBBFA4182D902E0052D6D7 /* MTLPropertyAttributes.m in Sources */ = {isa = PBXBuildFile; fileRef = DBCBBF98182D902E0052D6D7 /* MTLPropertyAttributes.m */; };
@@ -125,8 +122,6 @@
 		DBCBBF92182D902E0052D6D7 /* MTLModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTLModel.m; sourceTree = "<group>"; };
 		DBCBBF93182D902E0052D6D7 /* MTLModel+NSCoding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MTLModel+NSCoding.h"; sourceTree = "<group>"; };
 		DBCBBF94182D902E0052D6D7 /* MTLModel+NSCoding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MTLModel+NSCoding.m"; sourceTree = "<group>"; };
-		DBCBBF95182D902E0052D6D7 /* MTLReflection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTLReflection.h; sourceTree = "<group>"; };
-		DBCBBF96182D902E0052D6D7 /* MTLReflection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTLReflection.m; sourceTree = "<group>"; };
 		DBCBBF97182D902E0052D6D7 /* MTLPropertyAttributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTLPropertyAttributes.h; sourceTree = "<group>"; };
 		DBCBBF98182D902E0052D6D7 /* MTLPropertyAttributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTLPropertyAttributes.m; sourceTree = "<group>"; };
 		DBCBBFA6182D903C0052D6D7 /* MTLJSONAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTLJSONAdapter.h; sourceTree = "<group>"; };
@@ -307,8 +302,6 @@
 				DBCBBF92182D902E0052D6D7 /* MTLModel.m */,
 				DBCBBF93182D902E0052D6D7 /* MTLModel+NSCoding.h */,
 				DBCBBF94182D902E0052D6D7 /* MTLModel+NSCoding.m */,
-				DBCBBF95182D902E0052D6D7 /* MTLReflection.h */,
-				DBCBBF96182D902E0052D6D7 /* MTLReflection.m */,
 				DBCBBF97182D902E0052D6D7 /* MTLPropertyAttributes.h */,
 				DBCBBF98182D902E0052D6D7 /* MTLPropertyAttributes.m */,
 				DBCBBFB0182D903F0052D6D7 /* Adapters */,
@@ -360,7 +353,6 @@
 				DBCBBFA2182D902E0052D6D7 /* MTLPropertyAttributes.h in Headers */,
 				DBCBBF9C182D902E0052D6D7 /* MTLModel+NSCoding.h in Headers */,
 				DBCBBFAD182D903C0052D6D7 /* MTLManagedObjectAdapter.h in Headers */,
-				DBCBBF9F182D902E0052D6D7 /* MTLReflection.h in Headers */,
 				DBCBBFD2182D90710052D6D7 /* NSValueTransformer+MTLPredefinedTransformerAdditions.h in Headers */,
 				DBCBBF99182D902E0052D6D7 /* MTLModel.h in Headers */,
 				DBCBBFC9182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.h in Headers */,
@@ -509,7 +501,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBCBBFA0182D902E0052D6D7 /* MTLReflection.m in Sources */,
 				DBCBBF9D182D902E0052D6D7 /* MTLModel+NSCoding.m in Sources */,
 				DBCBBFCA182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.m in Sources */,
 				DBCBBFAB182D903C0052D6D7 /* MTLJSONAdapter.m in Sources */,
@@ -545,7 +536,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DBCBBFA1182D902E0052D6D7 /* MTLReflection.m in Sources */,
 				DBCBBF9E182D902E0052D6D7 /* MTLModel+NSCoding.m in Sources */,
 				DBCBBFCB182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.m in Sources */,
 				DBCBBFAC182D903C0052D6D7 /* MTLJSONAdapter.m in Sources */,

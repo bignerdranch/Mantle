@@ -8,7 +8,6 @@
 
 #import "MTLModel+NSCoding.h"
 #import "MTLPropertyAttributes.h"
-#import "MTLReflection.h"
 #import <objc/runtime.h>
 
 // Used in archives to store the modelVersion of the archived instance.

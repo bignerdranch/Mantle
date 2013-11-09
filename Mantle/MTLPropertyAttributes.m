@@ -7,7 +7,7 @@
 //
 
 #import "MTLPropertyAttributes.h"
-#import "MTLReflection.h"
+#import "MTLModel.h"
 #import <objc/runtime.h>
 
 @interface MTLPropertyAttributes ()

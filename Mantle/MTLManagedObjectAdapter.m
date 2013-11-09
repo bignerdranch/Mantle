@@ -8,7 +8,6 @@
 
 #import "MTLManagedObjectAdapter.h"
 #import "MTLModel.h"
-#import "MTLReflection.h"
 
 NSString * const MTLManagedObjectAdapterErrorDomain = @"MTLManagedObjectAdapterErrorDomain";
 const NSInteger MTLManagedObjectAdapterErrorNoClassFound = 2;
