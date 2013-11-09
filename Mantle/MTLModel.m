@@ -94,21 +94,16 @@ static BOOL MTLValidateAndSetValue(id obj, NSString *key, id value, BOOL forceUp
 #pragma mark Reflection
 
 + (NSSet *)propertyKeys {
-	NSSet *cachedKeys = objc_getAssociatedObject(self, MTLModelCachedPropertyKeysKey);
-	if (cachedKeys != nil) return cachedKeys;
+	NSSet *keys = objc_getAssociatedObject(self, MTLModelCachedPropertyKeysKey);
+	if (!keys) {
+		keys = [MTLPropertyAttributes namesOfPropertiesInClassHierarchy:self untilClass:MTLModel.class passingTest:^BOOL(MTLPropertyAttributes *attributes) {
+			return (attributes.readonly && attributes.ivar == NULL) ? NO : YES;
+		}];
 
-	NSMutableSet *keys = [NSMutableSet set];
-
-	[MTLPropertyAttributes enumeratePropertiesOfClass:self recursiveUntilClass:[MTLModel class] usingBlock:^(MTLPropertyAttributes *attributes, BOOL *stop) {
-		if (attributes.readonly && attributes.ivar == NULL) return;
-
-		[keys addObject:attributes.name];
-	}];
-
-	// It doesn't really matter if we replace another thread's work, since we do
-	// it atomically and the result should be the same.
-	objc_setAssociatedObject(self, MTLModelCachedPropertyKeysKey, keys, OBJC_ASSOCIATION_COPY);
-
+		// It doesn't really matter if we replace another thread's work, since we do
+		// it atomically and the result should be the same.
+		objc_setAssociatedObject(self, MTLModelCachedPropertyKeysKey, keys, OBJC_ASSOCIATION_COPY);
+	}
 	return keys;
 }
 

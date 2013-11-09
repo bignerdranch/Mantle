@@ -52,7 +52,7 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 	NSSet *propertyKeys = self.propertyKeys;
 	NSMutableDictionary *behaviors = [[NSMutableDictionary alloc] initWithCapacity:propertyKeys.count];
 
-	[MTLPropertyAttributes enumerateProperties:propertyKeys ofClass:self usingBlock:^(MTLPropertyAttributes *attributes) {
+	[MTLPropertyAttributes enumeratePropertiesOfClass:self named:propertyKeys usingBlock:^(MTLPropertyAttributes *attributes) {
 		MTLModelEncodingBehavior behavior = (attributes.memoryPolicy == MTLPropertyMemoryPolicyWeak ? MTLModelEncodingBehaviorConditional : MTLModelEncodingBehaviorUnconditional);
 		behaviors[attributes.name] = @(behavior);
 	}];
@@ -71,7 +71,7 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 
 	NSMutableDictionary *allowedClasses = [[NSMutableDictionary alloc] initWithCapacity:propertyKeys.count];
 
-	[MTLPropertyAttributes enumerateProperties:propertyKeys ofClass:self usingBlock:^(MTLPropertyAttributes *attributes) {
+	[MTLPropertyAttributes enumeratePropertiesOfClass:self named:propertyKeys usingBlock:^(MTLPropertyAttributes *attributes) {
 		// If the property is not of object or class type, assume that it's
 		// a primitive which would be boxed into an NSValue.
 		if (attributes.type[0] != '@' && attributes.type[0] != '#') {

@@ -39,26 +39,19 @@ typedef NS_ENUM(int16_t, MTLPropertyMemoryPolicy) {
 @interface MTLPropertyAttributes : NSObject
 
 /**
- Enumerates given property attributes of the given class.
- */
-+ (void)enumerateProperties:(id <NSFastEnumeration>)propertyNames ofClass:(Class)cls usingBlock:(void (^)(MTLPropertyAttributes *attributes))block;
-
-/**
- Enumerates all properties of the given class' hierarchy, starting at the given
- class, and continuing up until (but not including) a given class.
+ Checks all properties of the given class' hierarchy, starting at the given
+ class, and continuing up until (but not including) a given class, for validity
+ against a given block.
 
  The given block will be invoked multiple times for any properties declared on
  multiple classes in the hierarchy.
  */
-+ (void)enumeratePropertiesOfClass:(Class)cls recursiveUntilClass:(Class)endCls usingBlock:(void (^)(MTLPropertyAttributes *attributes, BOOL *stop))block;
++ (NSSet *)namesOfPropertiesInClassHierarchy:(Class)cls untilClass:(Class)endCls passingTest:(BOOL (^)(MTLPropertyAttributes *attributes))block;
 
 /**
- Enumerates all properties of the given class.
-
- The given block will be invoked multiple times for any properties declared on
- multiple classes in the hierarchy.
+ Enumerates given property attributes for the given class.
  */
-+ (void)enumeratePropertiesOfClass:(Class)cls usingBlock:(void (^)(MTLPropertyAttributes *attributes, BOOL *stop))block;
++ (void)enumeratePropertiesOfClass:(Class)cls named:(id <NSFastEnumeration>)propertyNames usingBlock:(void (^)(MTLPropertyAttributes *attributes))block;
 
 /**
  * The name of this property.

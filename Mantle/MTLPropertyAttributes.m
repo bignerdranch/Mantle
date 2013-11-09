@@ -27,24 +27,20 @@
 
 @implementation MTLPropertyAttributes
 
-+ (void)enumerateProperties:(id <NSFastEnumeration>)propertyKeys ofClass:(Class)cls usingBlock:(void (^)(MTLPropertyAttributes *attributes))block
++ (NSSet *)namesOfPropertiesInClassHierarchy:(Class)cls untilClass:(Class)endCls passingTest:(BOOL (^)(MTLPropertyAttributes *attributes))block
 {
-	for (NSString *propertyName in propertyKeys) {
-		objc_property_t property = class_getProperty(cls, propertyName.UTF8String);
-		NSAssert(property, @"Could not find property \"%@\" on %@", propertyName, cls);
+	NSParameterAssert(block);
 
-		MTLPropertyAttributes *attributes = [[MTLPropertyAttributes alloc] initWithProperty:property named:propertyName];
-		block(attributes);
-	}
+	NSMutableSet *set = [NSMutableSet set];
+	[self enumeratePropertiesOfClass:cls untilClass:endCls usingBlock:^(MTLPropertyAttributes *attributes, BOOL *stop) {
+		if (block(attributes)) {
+			[set addObject:attributes.name];
+		}
+	}];
+	return [set copy];
 }
 
-+ (void)enumeratePropertiesOfClass:(Class)cls usingBlock:(void (^)(MTLPropertyAttributes *attributes, BOOL *stop))block
-{
-	NSParameterAssert(cls != [NSObject class] && [cls superclass] != NULL);
-	[self enumeratePropertiesOfClass:cls recursiveUntilClass:NULL usingBlock:block];
-}
-
-+ (void)enumeratePropertiesOfClass:(Class)cls recursiveUntilClass:(Class)endCls usingBlock:(void (^)(MTLPropertyAttributes *attributes, BOOL *stop))block
++ (void)enumeratePropertiesOfClass:(Class)cls untilClass:(Class)endCls usingBlock:(void (^)(MTLPropertyAttributes *attributes, BOOL *stop))block
 {
 	BOOL stop = NO;
 	if (endCls == NULL) endCls = [cls superclass];
@@ -63,6 +59,17 @@
 			free(properties);
 		}
 		cls = cls.superclass;
+	}
+}
+
++ (void)enumeratePropertiesOfClass:(Class)cls named:(id <NSFastEnumeration>)propertyNames usingBlock:(void (^)(MTLPropertyAttributes *attributes))block
+{
+	for (NSString *propertyName in propertyNames) {
+		objc_property_t property = class_getProperty(cls, propertyName.UTF8String);
+		NSAssert(property, @"Could not find property \"%@\" on %@", propertyName, cls);
+
+		MTLPropertyAttributes *attributes = [[MTLPropertyAttributes alloc] initWithProperty:property named:propertyName];
+		block(attributes);
 	}
 }
 
