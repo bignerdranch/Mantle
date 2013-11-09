@@ -6,7 +6,8 @@
 //  Copyright (c) 2013 GitHub. All rights reserved.
 //
 
-#import <Mantle/Mantle.h>
+#import "MTLModel.h"
+#import "MTLManagedObjectAdapter.h"
 #import <CoreData/CoreData.h>
 
 // Corresponds to the `Parent` entity.

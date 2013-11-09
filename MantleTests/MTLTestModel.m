@@ -7,6 +7,9 @@
 //
 
 #import "MTLTestModel.h"
+#import "MTLValueTransformer.h"
+#import "MTLModel+NSCoding.h"
+#import "NSDictionary+MTLManipulationAdditions.h"
 
 NSString * const MTLTestModelErrorDomain = @"MTLTestModelErrorDomain";
 const NSInteger MTLTestModelNameTooLong = 1;

@@ -10,6 +10,9 @@ extern NSString * const MTLTestModelErrorDomain;
 extern const NSInteger MTLTestModelNameTooLong;
 extern const NSInteger MTLTestModelNameMissing;
 
+#import "MTLModel.h"
+#import "MTLJSONAdapter.h"
+
 @interface MTLEmptyTestModel : MTLModel
 @end
 

@@ -7,6 +7,7 @@
 //
 
 #import "MTLCoreDataTestModels.h"
+#import "MTLValueTransformer.h"
 
 @implementation MTLParentTestModel
 
