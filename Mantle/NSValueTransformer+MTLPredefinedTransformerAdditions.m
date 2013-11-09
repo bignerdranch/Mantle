@@ -11,7 +11,6 @@
 #import "MTLModel.h"
 #import "MTLValueTransformer.h"
 
-NSString * const MTLURLValueTransformerName = @"MTLURLValueTransformerName";
 NSString * const MTLBooleanValueTransformerName = @"MTLBooleanValueTransformerName";
 
 @implementation NSValueTransformer (MTLPredefinedTransformerAdditions)
@@ -20,18 +19,6 @@ NSString * const MTLBooleanValueTransformerName = @"MTLBooleanValueTransformerNa
 
 + (void)load {
 	@autoreleasepool {
-		MTLValueTransformer *URLValueTransformer = [MTLValueTransformer
-			reversibleTransformerWithForwardBlock:^ id (NSString *str) {
-				if (![str isKindOfClass:NSString.class]) return nil;
-				return [NSURL URLWithString:str];
-			}
-			reverseBlock:^ id (NSURL *URL) {
-				if (![URL isKindOfClass:NSURL.class]) return nil;
-				return URL.absoluteString;
-			}];
-		
-		[NSValueTransformer setValueTransformer:URLValueTransformer forName:MTLURLValueTransformerName];
-
 		MTLValueTransformer *booleanValueTransformer = [MTLValueTransformer
 			reversibleTransformerWithBlock:^ id (NSNumber *boolean) {
 				if (![boolean isKindOfClass:NSNumber.class]) return nil;

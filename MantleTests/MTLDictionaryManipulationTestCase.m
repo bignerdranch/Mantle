@@ -50,30 +50,4 @@
 	XCTAssertEqualObjects(combined, expected, @"should replace any existing keys");
 }
 
-- (void)testDictionaryByRemovingEntriesExtra
-{
-	NSDictionary *removed = [dict mtl_dictionaryByRemovingEntriesWithKeys:[NSSet setWithObject:@"hi"]];
-	XCTAssertEqualObjects(removed, dict, @"should return the same dictionary when removing keys that don't exist in the receiver");
-}
-
-- (void)testDictionaryByRemovingEntriesNil
-{
-	NSDictionary *removed = [dict mtl_dictionaryByRemovingEntriesWithKeys:nil];
-	XCTAssertEqualObjects(removed, dict, @"should return the same dictionary when given a nil array of keys");
-}
-
-- (void)testDictionaryByRemovingEntries
-{
-	NSDictionary *removed = [dict mtl_dictionaryByRemovingEntriesWithKeys:[NSSet setWithObject:@(5)]];
-	NSDictionary *expected = @{ @"foo": @"bar" };
-	XCTAssertEqualObjects(removed, expected, @"should remove all the entries for the given keys");
-}
-
-- (void)testDictionaryByRemovingEntriesAll
-{
-	NSDictionary *removed = [dict mtl_dictionaryByRemovingEntriesWithKeys:[NSSet setWithArray:dict.allKeys]];
-	NSDictionary *expected = @{};
-	XCTAssertEqualObjects(removed, expected, @"should return an empty dictionary when it removes all its keys");
-}
-
 @end

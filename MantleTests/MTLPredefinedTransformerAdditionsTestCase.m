@@ -18,22 +18,6 @@
 
 @implementation MTLPredefinedTransformerAdditionsTestCase
 
-- (void)testURLTransformer
-{
-	NSString *desc = @"should define a URL value transformer";
-
-	NSValueTransformer *transformer = [NSValueTransformer valueTransformerForName:MTLURLValueTransformerName];
-	XCTAssertNotNil(transformer, @"%@", desc);
-	XCTAssertTrue([transformer.class allowsReverseTransformation], @"%@", desc);
-
-	NSString *URLString = @"http://www.github.com/";
-	XCTAssertEqualObjects([transformer transformedValue:URLString], [NSURL URLWithString:URLString], @"%@", desc);
-	XCTAssertEqualObjects([transformer reverseTransformedValue:[NSURL URLWithString:URLString]], URLString, @"%@", desc);
-
-	XCTAssertNil([transformer transformedValue:nil], @"%@", desc);
-	XCTAssertNil([transformer reverseTransformedValue:nil], @"%@", desc);
-}
-
 - (void)testBooleanTransformer
 {
 	NSString *desc = @"should define an NSNumber boolean value transformer";

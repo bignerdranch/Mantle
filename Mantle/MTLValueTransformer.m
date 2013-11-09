@@ -17,8 +17,8 @@
 
 @interface MTLValueTransformer ()
 
-@property (nonatomic, copy, readonly) MTLValueTransformerBlock forwardBlock;
-@property (nonatomic, copy, readonly) MTLValueTransformerBlock reverseBlock;
+@property (nonatomic, copy, readonly) id(^forwardBlock)(id);
+@property (nonatomic, copy, readonly) id(^reverseBlock)(id);
 
 @end
 
@@ -26,19 +26,19 @@
 
 #pragma mark Lifecycle
 
-+ (instancetype)transformerWithBlock:(MTLValueTransformerBlock)transformationBlock {
++ (instancetype)transformerWithBlock:(id(^)(id))transformationBlock {
 	return [[self alloc] initWithForwardBlock:transformationBlock reverseBlock:nil];
 }
 
-+ (instancetype)reversibleTransformerWithBlock:(MTLValueTransformerBlock)transformationBlock {
++ (instancetype)reversibleTransformerWithBlock:(id(^)(id))transformationBlock {
 	return [self reversibleTransformerWithForwardBlock:transformationBlock reverseBlock:transformationBlock];
 }
 
-+ (instancetype)reversibleTransformerWithForwardBlock:(MTLValueTransformerBlock)forwardBlock reverseBlock:(MTLValueTransformerBlock)reverseBlock {
++ (instancetype)reversibleTransformerWithForwardBlock:(id(^)(id))forwardBlock reverseBlock:(id(^)(id))reverseBlock {
 	return [[MTLReversibleValueTransformer alloc] initWithForwardBlock:forwardBlock reverseBlock:reverseBlock];
 }
 
-- (id)initWithForwardBlock:(MTLValueTransformerBlock)forwardBlock reverseBlock:(MTLValueTransformerBlock)reverseBlock {
+- (id)initWithForwardBlock:(id(^)(id))forwardBlock reverseBlock:(id(^)(id))reverseBlock {
 	NSParameterAssert(forwardBlock != nil);
 
 	self = [super init];
@@ -70,7 +70,7 @@
 
 #pragma mark Lifecycle
 
-- (id)initWithForwardBlock:(MTLValueTransformerBlock)forwardBlock reverseBlock:(MTLValueTransformerBlock)reverseBlock {
+- (id)initWithForwardBlock:(id(^)(id))forwardBlock reverseBlock:(id(^)(id))reverseBlock {
 	NSParameterAssert(reverseBlock != nil);
 	return [super initWithForwardBlock:forwardBlock reverseBlock:reverseBlock];
 }

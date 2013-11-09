@@ -17,13 +17,13 @@ typedef id (^MTLValueTransformerBlock)(id);
 
 // Returns a transformer which transforms values using the given block. Reverse
 // transformations will not be allowed.
-+ (instancetype)transformerWithBlock:(MTLValueTransformerBlock)transformationBlock;
++ (instancetype)transformerWithBlock:(id(^)(id))transformationBlock;
 
 // Returns a transformer which transforms values using the given block, for
 // forward or reverse transformations.
-+ (instancetype)reversibleTransformerWithBlock:(MTLValueTransformerBlock)transformationBlock;
++ (instancetype)reversibleTransformerWithBlock:(id(^)(id))transformationBlock;
 
 // Returns a transformer which transforms values using the given blocks.
-+ (instancetype)reversibleTransformerWithForwardBlock:(MTLValueTransformerBlock)forwardBlock reverseBlock:(MTLValueTransformerBlock)reverseBlock;
++ (instancetype)reversibleTransformerWithForwardBlock:(id(^)(id))forwardBlock reverseBlock:(id(^)(id))reverseBlock;
 
 @end
