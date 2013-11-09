@@ -12,4 +12,3 @@
 #import <Mantle/MTLModel+NSCoding.h>
 #import <Mantle/MTLValueTransformer.h>
 #import <Mantle/NSDictionary+MTLManipulationAdditions.h>
-#import <Mantle/NSValueTransformer+MTLPredefinedTransformerAdditions.h>

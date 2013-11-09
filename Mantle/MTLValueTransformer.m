@@ -7,6 +7,10 @@
 //
 
 #import "MTLValueTransformer.h"
+#import "MTLJSONAdapter.h"
+#import "MTLModel.h"
+
+NSString * const MTLBooleanValueTransformerName = @"MTLBooleanValueTransformerName";
 
 //
 // Any MTLValueTransformer supporting reverse transformation. Necessary because
@@ -84,5 +88,123 @@
 - (id)reverseTransformedValue:(id)value {
 	return self.reverseBlock(value);
 }
+
+@end
+
+#pragma mark Predefined Transformers
+
+@implementation NSValueTransformer (MTLPredefinedTransformerAdditions)
+
++ (void)load {
+	@autoreleasepool {
+		MTLValueTransformer *booleanValueTransformer = [MTLValueTransformer
+														reversibleTransformerWithBlock:^id(NSNumber *boolean) {
+															if (![boolean isKindOfClass:NSNumber.class]) return nil;
+															return (boolean.boolValue) ? @YES : @NO;
+														}];
+
+		[NSValueTransformer setValueTransformer:booleanValueTransformer forName:MTLBooleanValueTransformerName];
+	}
+}
+
+@end
+
+@implementation MTLValueTransformer (MTLPredefinedTransformers)
+
++ (instancetype)booleanValueTransformer
+{
+	return (MTLValueTransformer *)[NSValueTransformer valueTransformerForName:MTLBooleanValueTransformerName];
+}
+
++ (instancetype)JSONDictionaryTransformerWithModelClass:(Class)modelClass {
+	NSParameterAssert([modelClass isSubclassOfClass:MTLModel.class]);
+	NSParameterAssert([modelClass conformsToProtocol:@protocol(MTLJSONSerializing)]);
+
+	return [MTLValueTransformer
+		reversibleTransformerWithForwardBlock:^ id (id JSONDictionary) {
+			if (JSONDictionary == nil) return nil;
+
+			NSAssert([JSONDictionary isKindOfClass:NSDictionary.class], @"Expected a dictionary, got: %@", JSONDictionary);
+
+			return [MTLJSONAdapter modelOfClass:modelClass fromJSONDictionary:JSONDictionary error:NULL];
+		}
+		reverseBlock:^ id (id model) {
+			if (model == nil) return nil;
+
+			NSAssert([model isKindOfClass:MTLModel.class], @"Expected a MTLModel object, got %@", model);
+			NSAssert([model conformsToProtocol:@protocol(MTLJSONSerializing)], @"Expected a model object conforming to <MTLJSONSerializing>, got %@", model);
+
+			return [MTLJSONAdapter JSONDictionaryFromModel:model];
+		}];
+}
+
++ (instancetype)JSONArrayTransformerWithModelClass:(Class)modelClass {
+	NSValueTransformer *dictionaryTransformer = [self JSONDictionaryTransformerWithModelClass:modelClass];
+
+	return [MTLValueTransformer
+		reversibleTransformerWithForwardBlock:^ id (NSArray *dictionaries) {
+			if (dictionaries == nil) return nil;
+
+			NSAssert([dictionaries isKindOfClass:NSArray.class], @"Expected a array of dictionaries, got: %@", dictionaries);
+
+			NSMutableArray *models = [NSMutableArray arrayWithCapacity:dictionaries.count];
+			for (id JSONDictionary in dictionaries) {
+				if (JSONDictionary == NSNull.null) {
+					[models addObject:NSNull.null];
+					continue;
+				}
+
+				NSAssert([JSONDictionary isKindOfClass:NSDictionary.class], @"Expected a dictionary or an NSNull, got: %@", JSONDictionary);
+
+				id model = [dictionaryTransformer transformedValue:JSONDictionary];
+				if (model == nil) continue;
+
+				[models addObject:model];
+			}
+
+			return models;
+		}
+		reverseBlock:^ id (NSArray *models) {
+			if (models == nil) return nil;
+
+			NSAssert([models isKindOfClass:NSArray.class], @"Expected a array of MTLModels, got: %@", models);
+
+			NSMutableArray *dictionaries = [NSMutableArray arrayWithCapacity:models.count];
+			for (id model in models) {
+				if (model == NSNull.null) {
+					[dictionaries addObject:NSNull.null];
+					continue;
+				}
+
+				NSAssert([model isKindOfClass:MTLModel.class], @"Expected an MTLModel or an NSNull, got: %@", model);
+
+				NSDictionary *dict = [dictionaryTransformer reverseTransformedValue:model];
+				if (dict == nil) continue;
+
+				[dictionaries addObject:dict];
+			}
+
+			return dictionaries;
+		}];
+}
+
++ (instancetype)valueMappingTransformerWithDictionary:(NSDictionary *)dictionary {
+	NSParameterAssert(dictionary != nil);
+	NSParameterAssert(dictionary.count == [[NSSet setWithArray:dictionary.allValues] count]);
+
+	return [MTLValueTransformer reversibleTransformerWithForwardBlock:^(id<NSCopying> key) {
+		return dictionary[key];
+	} reverseBlock:^(id object) {
+		__block id result = nil;
+		[dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id anObject, BOOL *stop) {
+			if ([object isEqual:anObject]) {
+				result = key;
+				*stop = YES;
+			}
+		}];
+		return result;
+	}];
+}
+
 
 @end

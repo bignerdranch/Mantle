@@ -84,9 +84,9 @@ static BOOL MTLValidateAndSetValue(id obj, NSString *key, id value, BOOL forceUp
 		#else
 		if (error != NULL) {
 			*error = [NSError errorWithDomain:MTLModelErrorDomain code:MTLModelErrorExceptionThrown userInfo:@{
-				NSLocalizedDescriptionKey: exception.description,
-				NSLocalizedFailureReasonErrorKey: exception.reason,
-				MTLModelThrownExceptionErrorKey: exception
+				NSLocalizedDescriptionKey: ex.description,
+				NSLocalizedFailureReasonErrorKey: ex.reason,
+				MTLModelThrownExceptionErrorKey: ex
 			}];
 		}
 

@@ -16,10 +16,4 @@
 	return result;
 }
 
-- (NSDictionary *)mtl_dictionaryByRemovingEntriesWithKeys:(NSSet *)keys {
-	NSMutableDictionary *result = [self mutableCopy];
-	[result removeObjectsForKeys:keys.allObjects];
-	return result;
-}
-
 @end
