@@ -133,10 +133,3 @@ extern const NSInteger MTLJSONAdapterErrorInvalidJSONDictionary;
 - (NSString *)JSONKeyPathForPropertyKey:(NSString *)key;
 
 @end
-
-@interface MTLJSONAdapter (Deprecated)
-
-+ (id)modelOfClass:(Class)modelClass fromJSONDictionary:(NSDictionary *)JSONDictionary __attribute__((deprecated("Replaced by +modelOfClass:fromJSONDictionary:error:")));
-- (id)initWithJSONDictionary:(NSDictionary *)JSONDictionary modelClass:(Class)modelClass __attribute__((deprecated("Replaced by -initWithJSONDictionary:modelClass:error:")));
-
-@end
