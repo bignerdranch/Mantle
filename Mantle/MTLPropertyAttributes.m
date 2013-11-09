@@ -220,7 +220,7 @@
 
 		if (!self.setter) {
 			// use the property name to create a set<Foo>: setter
-			self.setter = MTLSelectorWithCapitalizedKeyPattern("set", propertyName, ":");
+			self.setter = MTLSelectorWithKeyPattern("set", propertyName, ":");
 		}
 	}
 	return self;

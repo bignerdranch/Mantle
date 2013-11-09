@@ -548,7 +548,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 - (NSValueTransformer *)entityAttributeTransformerForKey:(NSString *)key {
 	NSParameterAssert(key != nil);
 
-	SEL selector = MTLSelectorWithKeyPattern(key, "EntityAttributeTransformer");
+	SEL selector = MTLSelectorWithKeyPattern("", key, "EntityAttributeTransformer");
 	if ([self.modelClass respondsToSelector:selector]) {
 		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[self.modelClass methodSignatureForSelector:selector]];
 		invocation.target = self.modelClass;
