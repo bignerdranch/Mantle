@@ -8,8 +8,7 @@
 
 #import "NSError+MTLModelException.h"
 #import "MTLModel.h"
-#import "EXTRuntimeExtensions.h"
-#import "EXTScope.h"
+#import "MTLPropertyAttributes.h"
 #import "MTLReflection.h"
 #import <objc/runtime.h>
 
@@ -65,17 +64,6 @@ static BOOL MTLValidateAndSetValue(id obj, NSString *key, id value, BOOL forceUp
 	}
 }
 
-@interface MTLModel ()
-
-// Enumerates all properties of the receiver's class hierarchy, starting at the
-// receiver, and continuing up until (but not including) MTLModel.
-//
-// The given block will be invoked multiple times for any properties declared on
-// multiple classes in the hierarchy.
-+ (void)enumeratePropertiesUsingBlock:(void (^)(objc_property_t property, BOOL *stop))block;
-
-@end
-
 @implementation MTLModel
 
 #pragma mark Lifecycle
@@ -110,44 +98,16 @@ static BOOL MTLValidateAndSetValue(id obj, NSString *key, id value, BOOL forceUp
 
 #pragma mark Reflection
 
-+ (void)enumeratePropertiesUsingBlock:(void (^)(objc_property_t property, BOOL *stop))block {
-	Class cls = self;
-	BOOL stop = NO;
-
-	while (!stop && ![cls isEqual:MTLModel.class]) {
-		unsigned count = 0;
-		objc_property_t *properties = class_copyPropertyList(cls, &count);
-
-		cls = cls.superclass;
-		if (properties == NULL) continue;
-
-		@onExit {
-			free(properties);
-		};
-
-		for (unsigned i = 0; i < count; i++) {
-			block(properties[i], &stop);
-			if (stop) break;
-		}
-	}
-}
-
 + (NSSet *)propertyKeys {
 	NSSet *cachedKeys = objc_getAssociatedObject(self, MTLModelCachedPropertyKeysKey);
 	if (cachedKeys != nil) return cachedKeys;
 
 	NSMutableSet *keys = [NSMutableSet set];
 
-	[self enumeratePropertiesUsingBlock:^(objc_property_t property, BOOL *stop) {
-		mtl_propertyAttributes *attributes = mtl_copyPropertyAttributes(property);
-		@onExit {
-			free(attributes);
-		};
+	[MTLPropertyAttributes enumeratePropertiesOfClass:self recursiveUntilClass:[MTLModel class] usingBlock:^(MTLPropertyAttributes *attributes, BOOL *stop) {
+		if (attributes.readonly && attributes.ivar == NULL) return;
 
-		if (attributes->readonly && attributes->ivar == NULL) return;
-
-		NSString *key = @(property_getName(property));
-		[keys addObject:key];
+		[keys addObject:attributes.name];
 	}];
 
 	// It doesn't really matter if we replace another thread's work, since we do

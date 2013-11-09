@@ -7,7 +7,6 @@
 //
 
 #import "MTLManagedObjectAdapter.h"
-#import "EXTScope.h"
 #import "MTLModel.h"
 #import "MTLReflection.h"
 #import "NSArray+MTLManipulationAdditions.h"
@@ -256,11 +255,11 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 	CFMutableDictionaryRef processedObjects = CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 	if (processedObjects == NULL) return nil;
 
-	@onExit {
-		CFRelease(processedObjects);
-	};
+	id ret = [self modelOfClass:modelClass fromManagedObject:managedObject processedObjects:processedObjects error:error];
 
-	return [self modelOfClass:modelClass fromManagedObject:managedObject processedObjects:processedObjects error:error];
+	CFRelease(processedObjects);
+
+	return ret;
 }
 
 + (id)modelOfClass:(Class)modelClass fromManagedObject:(NSManagedObject *)managedObject processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error {
@@ -340,7 +339,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 				return nil;
 			}
 
-			return results.mtl_firstObject;
+			return results.firstObject;
 		});
 
 		if (encountedError && error != NULL) {
@@ -525,11 +524,11 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 	CFMutableDictionaryRef processedObjects = CFDictionaryCreateMutable(NULL, 0, &keyCallbacks, &kCFTypeDictionaryValueCallBacks);
 	if (processedObjects == NULL) return nil;
 
-	@onExit {
-		CFRelease(processedObjects);
-	};
+	id ret = [self managedObjectFromModel:model insertingIntoContext:context processedObjects:processedObjects error:error];;
 
-	return [self managedObjectFromModel:model insertingIntoContext:context processedObjects:processedObjects error:error];
+	CFRelease(processedObjects);
+
+	return ret;
 }
 
 + (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model insertingIntoContext:(NSManagedObjectContext *)context processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error {
