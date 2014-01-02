@@ -142,7 +142,7 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 		}
 	}
 
-	_model = [self.modelClass modelWithDictionary:dictionaryValue error:error];
+	_model = (MTLModel <MTLJSONSerializing> *)[self.modelClass modelWithDictionary:dictionaryValue error:error];
 	if (_model == nil) return nil;
 
 	return self;
