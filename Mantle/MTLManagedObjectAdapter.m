@@ -32,7 +32,9 @@ static id performInContext(NSManagedObjectContext *context, id (^block)(void)) {
 }
 
 // An exception was thrown and caught.
+#if (defined(DEBUG) && !DEBUG) || !defined(DEBUG)
 static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
+#endif
 
 @interface MTLManagedObjectAdapter ()
 
