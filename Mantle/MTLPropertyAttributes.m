@@ -89,8 +89,7 @@
 	const char *next = NSGetSizeAndAlignment(typeString, NULL, NULL);
 	NSAssert(next, @"Could not read past type in attribute string \"%s\" for property %@", attrString, propertyName);
 
-	size_t typeLength = next - typeString;
-	NSAssert(typeLength, @"Invalid type in attribute string \"%s\" for property %@", attrString, propertyName);
+	NSAssert(next - typeString, @"Invalid type in attribute string \"%s\" for property %@", attrString, propertyName);
 
 	self = [super init];
 	if (self) {
