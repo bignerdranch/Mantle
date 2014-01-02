@@ -176,21 +176,24 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 			// Map NSNull -> nil for the transformer, and then back for the
 			// dictionaryValue we're going to insert into.
 			if ([value isEqual:NSNull.null]) value = nil;
-			value = [transformer reverseTransformedValue:value] ?: NSNull.null;
+			value = [transformer reverseTransformedValue:value]; // ?: NSNull.null;
 		}
 
 		NSArray *keyPathComponents = [JSONKeyPath componentsSeparatedByString:@"."];
 
 		// Set up dictionaries at each step of the key path.
 		id obj = JSONDictionary;
-		for (NSString *component in keyPathComponents) {
-			if ([obj valueForKey:component] == nil) {
-				// Insert an empty mutable dictionary at this spot so that we
-				// can set the whole key path afterward.
-				[obj setValue:[NSMutableDictionary dictionary] forKey:component];
-			}
 
-			obj = [obj valueForKey:component];
+		if (value) {
+			for (NSString *component in keyPathComponents) {
+				if ([obj valueForKey:component] == nil) {
+					// Insert an empty mutable dictionary at this spot so that we
+					// can set the whole key path afterward.
+					[obj setValue:[NSMutableDictionary dictionary] forKey:component];
+				}
+
+				obj = [obj valueForKey:component];
+			}
 		}
 
 		[JSONDictionary setValue:value forKeyPath:JSONKeyPath];
