@@ -37,6 +37,8 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 // Returns a transformer to use, or nil to not transform the property.
 - (NSValueTransformer *)JSONTransformerForKey:(NSString *)key;
 
+- (BOOL)excludesNilFromJSONForKey:(NSString *)key;
+
 @end
 
 @implementation MTLJSONAdapter
@@ -179,7 +181,10 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 			// Map NSNull -> nil for the transformer, and then back for the
 			// dictionaryValue we're going to insert into.
 			if ([value isEqual:NSNull.null]) value = nil;
-			value = [transformer reverseTransformedValue:value]; // ?: NSNull.null;
+			value = [transformer reverseTransformedValue:value];
+			if (!value && ![self excludesNilFromJSONForKey:propertyKey]) {
+				value = NSNull.null;
+			}
 		}
 
 		NSArray *keyPathComponents = [JSONKeyPath componentsSeparatedByString:@"."];
@@ -238,6 +243,28 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 	} else {
 		return JSONKeyPath;
 	}
+}
+
+- (BOOL)excludesNilFromJSONForKey:(NSString *)key {
+	NSParameterAssert(key != nil);
+
+	SEL selector = MTLSelectorWithKeyPattern("excludesNilFor", key, "FromJSON");
+	if ([self.modelClass respondsToSelector:selector]) {
+		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[self.modelClass methodSignatureForSelector:selector]];
+		invocation.target = self.modelClass;
+		invocation.selector = selector;
+		[invocation invoke];
+
+		BOOL result = NO;
+		[invocation getReturnValue:&result];
+		return result;
+	}
+
+	if ([self.modelClass respondsToSelector:@selector(excludesNilFromJSONForKey:)]) {
+		return [self.modelClass excludesNilFromJSONForKey:key];
+	}
+
+	return NO;
 }
 
 @end

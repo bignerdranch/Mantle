@@ -52,6 +52,15 @@
 // to abort parsing (e.g., if the data is invalid).
 + (Class)classForParsingJSONDictionary:(NSDictionary *)JSONDictionary;
 
+// Specifies whether, when a transformer is used to convert the property value
+// back to JSON, values that are nil will be included in the JSON dictionary.
+//
+// If the reciever implements a +excludesNilFor<key>FromJSON method, MTLJSONAdapter
+// will use the result of that method instead.
+//
+// Returns YES if values that are nil should be ignored. Default is NO.
++ (BOOL)excludesNilFromJSONForKey:(NSString *)key;
+
 @end
 
 // The domain for errors originating from MTLJSONAdapter.
