@@ -101,9 +101,11 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 	_modelClass = modelClass;
 	_JSONKeyPathsByPropertyKey = [[modelClass JSONKeyPathsByPropertyKey] copy];
 
-	NSMutableDictionary *dictionaryValue = [[NSMutableDictionary alloc] initWithCapacity:JSONDictionary.count];
+	NSSet *propertyKeys = [self.modelClass propertyKeys];
+	id keySet = [NSDictionary sharedKeySetForKeys:propertyKeys.allObjects];
+	NSMutableDictionary *dictionaryValue = [NSMutableDictionary dictionaryWithSharedKeySet:keySet];
 
-	for (NSString *propertyKey in [self.modelClass propertyKeys]) {
+	for (NSString *propertyKey in propertyKeys) {
 		NSString *JSONKeyPath = [self JSONKeyPathForPropertyKey:propertyKey];
 		if (JSONKeyPath == nil) continue;
 
@@ -165,7 +167,8 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 
 - (NSDictionary *)JSONDictionary {
 	NSDictionary *dictionaryValue = self.model.dictionaryValue;
-	NSMutableDictionary *JSONDictionary = [[NSMutableDictionary alloc] initWithCapacity:dictionaryValue.count];
+	id keySet = [NSDictionary sharedKeySetForKeys:dictionaryValue.allKeys];
+	NSMutableDictionary *JSONDictionary = [NSMutableDictionary dictionaryWithSharedKeySet:keySet];
 
 	[dictionaryValue enumerateKeysAndObjectsUsingBlock:^(NSString *propertyKey, id value, BOOL *stop) {
 		NSString *JSONKeyPath = [self JSONKeyPathForPropertyKey:propertyKey];

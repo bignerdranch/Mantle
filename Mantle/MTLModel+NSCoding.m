@@ -49,7 +49,8 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 
 + (NSDictionary *)encodingBehaviorsByPropertyKey {
 	NSSet *propertyKeys = self.propertyKeys;
-	NSMutableDictionary *behaviors = [[NSMutableDictionary alloc] initWithCapacity:propertyKeys.count];
+	id keySet = [NSDictionary sharedKeySetForKeys:propertyKeys.allObjects];
+	NSMutableDictionary *behaviors = [NSMutableDictionary dictionaryWithSharedKeySet:keySet];
 
 	[MTLPropertyAttributes enumeratePropertiesOfClass:self named:propertyKeys usingBlock:^(MTLPropertyAttributes *attributes) {
 		MTLModelEncodingBehavior behavior = (attributes.memoryPolicy == MTLPropertyMemoryPolicyWeak ? MTLModelEncodingBehaviorConditional : MTLModelEncodingBehaviorUnconditional);
@@ -68,7 +69,8 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 		return behavior.unsignedIntegerValue != MTLModelEncodingBehaviorExcluded;
 	}];
 
-	NSMutableDictionary *allowedClasses = [[NSMutableDictionary alloc] initWithCapacity:propertyKeys.count];
+	id keySet = [NSDictionary sharedKeySetForKeys:propertyKeys.allObjects];
+	NSMutableDictionary *allowedClasses = [NSMutableDictionary dictionaryWithSharedKeySet:keySet];
 
 	[MTLPropertyAttributes enumeratePropertiesOfClass:self named:propertyKeys usingBlock:^(MTLPropertyAttributes *attributes) {
 		// If the property is not of object or class type, assume that it's
@@ -142,7 +144,8 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 	}
 
 	NSSet *propertyKeys = self.class.propertyKeys;
-	NSMutableDictionary *dictionaryValue = [[NSMutableDictionary alloc] initWithCapacity:propertyKeys.count];
+	id keySet = [NSDictionary sharedKeySetForKeys:propertyKeys.allObjects];
+	NSMutableDictionary *dictionaryValue = [NSMutableDictionary dictionaryWithSharedKeySet:keySet];
 
 	for (NSString *key in propertyKeys) {
 		id value = [self decodeValueForKey:key withCoder:coder modelVersion:version.unsignedIntegerValue];
