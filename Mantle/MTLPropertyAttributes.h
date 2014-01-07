@@ -54,6 +54,29 @@ typedef NS_ENUM(int16_t, MTLPropertyMemoryPolicy) {
 + (void)enumeratePropertiesOfClass:(Class)cls named:(id <NSFastEnumeration>)propertyNames usingBlock:(void (^)(MTLPropertyAttributes *attributes))block;
 
 /**
+ Enumerates properties for the given protocol's hierarchy, starting at the given
+ protocol, and continuing up until (but not including) a given protocol.
+
+ Protocols can comform to many other protocols. This method will recursively
+ follow the protocol chain up until the given protocol, or NSObject if the
+ protocol's tree does not include the given protocol.
+
+ The given block will be invoked multiple times for anally properties declared
+ on  protocols in the hierarchy.
+ */
++ (void)enumeratePropertiesInProtocolHierarchy:(Protocol *)proto untilProtocol:(Protocol *)endProto usingBlock:(void (^)(MTLPropertyAttributes *attributes))block;
+
+/**
+ Returns property attributes for a given property on a given class.
+ */
++ (instancetype)propertyOfClass:(Class)cls named:(NSString *)propertyName;
+
+/**
+ Returns property attributes for a given property on a given protocol.
+ */
++ (instancetype)propertyOfProtocol:(Protocol *)proto named:(NSString *)propertyName;
+
+/**
  * The name of this property.
  */
 @property (nonatomic, copy, readonly) NSString *name;

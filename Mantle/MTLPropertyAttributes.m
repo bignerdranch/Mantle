@@ -71,7 +71,7 @@
 	NSParameterAssert(block);
 
 	NSMutableSet *set = [NSMutableSet set];
-	[self enumeratePropertiesOfClass:cls untilClass:endCls usingBlock:^(MTLPropertyAttributes *attributes, BOOL *stop) {
+	[self enumeratePropertiesOfClass:cls untilClass:endCls usingBlock:^(MTLPropertyAttributes *attributes) {
 		if (block(attributes)) {
 			[set addObject:attributes.name];
 		}
@@ -79,37 +79,81 @@
 	return [set copy];
 }
 
-+ (void)enumeratePropertiesOfClass:(Class)cls untilClass:(Class)endCls usingBlock:(void (^)(MTLPropertyAttributes *attributes, BOOL *stop))block
++ (void)enumeratePropertiesOfClass:(Class)cls untilClass:(Class)endCls usingBlock:(void (^)(MTLPropertyAttributes *attributes))block
 {
-	BOOL stop = NO;
 	if (endCls == NULL) endCls = [cls superclass];
+	if (cls == NULL || cls == endCls || cls == NSObject.class) return;
 
-	while (!stop && ![cls isEqual:endCls]) {
-		unsigned count = 0;
-		objc_property_t *properties = class_copyPropertyList(cls, &count);
+	unsigned int count = 0;
+	objc_property_t *properties = class_copyPropertyList(cls, &count);
 
-		if (properties) {
-			for (unsigned i = 0; i < count; i++) {
-				MTLPropertyAttributes *attributes = [[MTLPropertyAttributes alloc] initWithProperty:properties[i]];
-				block(attributes, &stop);
-				if (stop) break;
-			}
-
-			free(properties);
+	if (properties) {
+		for (unsigned int i = 0; i < count; i++) {
+			MTLPropertyAttributes *attributes = [[MTLPropertyAttributes alloc] initWithProperty:properties[i]];
+			block(attributes);
 		}
-		cls = cls.superclass;
+
+		free(properties);
+	}
+
+	[self enumeratePropertiesOfClass:cls.superclass untilClass:endCls usingBlock:block];
+}
+
++ (void)enumeratePropertiesOfClass:(Class)cls named:(id <NSFastEnumeration>)propertyNames usingBlock:(void (^)(MTLPropertyAttributes *))block
+{
+	for (NSString *propertyName in propertyNames) {
+		block([self propertyOfClass:cls named:propertyName]);
 	}
 }
 
-+ (void)enumeratePropertiesOfClass:(Class)cls named:(id <NSFastEnumeration>)propertyNames usingBlock:(void (^)(MTLPropertyAttributes *attributes))block
++ (void)enumeratePropertiesInProtocolHierarchy:(Protocol *)proto untilProtocol:(Protocol *)endProto usingBlock:(void (^)(MTLPropertyAttributes *attributes))block;
 {
-	for (NSString *propertyName in propertyNames) {
-		objc_property_t property = class_getProperty(cls, propertyName.UTF8String);
-		NSAssert(property, @"Could not find property \"%@\" on %@", propertyName, cls);
-
-		MTLPropertyAttributes *attributes = [[MTLPropertyAttributes alloc] initWithProperty:property named:propertyName];
-		block(attributes);
+	if (protocol_isEqual(proto, @protocol(NSObject)) || protocol_isEqual(proto, endProto)) {
+		return;
 	}
+
+	unsigned int count = 0;
+
+	objc_property_t *properties = protocol_copyPropertyList(proto, &count);
+	if (properties) {
+		for (unsigned int i = 0; i < count; i++) {
+			MTLPropertyAttributes *attributes = [[MTLPropertyAttributes alloc] initWithProperty:properties[i]];
+			block(attributes);
+		}
+
+		free(properties);
+	}
+
+	Protocol * __unsafe_unretained *protocols = protocol_copyProtocolList(proto, &count);
+	if (protocols) {
+		for (unsigned int i = 0; i < count; i++) {
+			[self enumeratePropertiesInProtocolHierarchy:protocols[i] untilProtocol:endProto usingBlock:block];
+		}
+
+		free(protocols);
+	}
+}
+
++ (instancetype)propertyOfClass:(Class)cls named:(NSString *)propertyName
+{
+	objc_property_t property = class_getProperty(cls, propertyName.UTF8String);
+	NSAssert(property, @"Could not find property \"%@\" on %@", propertyName, cls);
+
+	MTLPropertyAttributes *attributes = [[MTLPropertyAttributes alloc] initWithProperty:property named:propertyName];
+	return attributes;
+}
+
++ (instancetype)propertyOfProtocol:(Protocol *)proto named:(NSString *)propertyName
+{
+	const char *name = propertyName.UTF8String;
+	objc_property_t property = protocol_getProperty(proto, name, YES, YES);
+	if (!property) property = protocol_getProperty(proto, name, NO, YES);
+	if (!property) property = protocol_getProperty(proto, name, YES, NO);
+	if (!property) property = protocol_getProperty(proto, name, NO, NO);
+	NSAssert(property, @"Could not find property \"%@\" on %@", propertyName, proto);
+
+	MTLPropertyAttributes *attributes = [[MTLPropertyAttributes alloc] initWithProperty:property named:propertyName];
+	return attributes;
 }
 
 - (instancetype)initWithProperty:(objc_property_t)property
