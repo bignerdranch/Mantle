@@ -27,6 +27,45 @@
 
 @implementation MTLPropertyAttributes
 
+- (NSString *)description
+{
+	return [NSString stringWithFormat:@"<%@: %p, \"%@\">", NSStringFromClass(self.class), self, self.name];
+}
+
+- (NSString *)debugDescription
+{
+	NSMutableArray *attributeItems = [NSMutableArray array];
+	if (self.nonatomic) {
+		[attributeItems addObject:@"nonatomic"];
+	}
+
+	switch (self.memoryPolicy) {
+		case MTLPropertyMemoryPolicyRetain:
+			[attributeItems addObject:@"strong"];
+			break;
+		case MTLPropertyMemoryPolicyCopy:
+			[attributeItems addObject:@"copy"];
+			break;
+		case MTLPropertyMemoryPolicyWeak:
+			[attributeItems addObject:@"weak"];
+			break;
+		default: break;
+	}
+
+	if (self.readonly) {
+		[attributeItems addObject:@"readonly"];
+	}
+
+	if (self.ivarString.length) {
+		[attributeItems addObject:[NSString stringWithFormat:@"ivar = %@", self.ivarString]];
+	}
+
+	NSString *propertyAttributes = [attributeItems componentsJoinedByString:@", "];
+	if (propertyAttributes.length) propertyAttributes = [NSString stringWithFormat:@"(%@) ", propertyAttributes];
+
+	return [NSString stringWithFormat:@"<%@: %p, @property %@(%@) %@;>", NSStringFromClass(self.class), self, propertyAttributes, self.typeString, self.name];
+}
+
 + (NSSet *)namesOfPropertiesInClassHierarchy:(Class)cls untilClass:(Class)endCls passingTest:(BOOL (^)(MTLPropertyAttributes *attributes))block
 {
 	NSParameterAssert(block);
