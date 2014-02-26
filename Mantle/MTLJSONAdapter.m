@@ -248,7 +248,7 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 - (BOOL)excludesNilFromJSONForKey:(NSString *)key {
 	NSParameterAssert(key != nil);
 
-	SEL selector = MTLSelectorWithKeyPattern("excludesNilFor", key, "FromJSON");
+	SEL selector = MTLSelectorWithKeyPattern("excludesNil", key, "FromJSON");
 	if ([self.modelClass respondsToSelector:selector]) {
 		NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[self.modelClass methodSignatureForSelector:selector]];
 		invocation.target = self.modelClass;
