@@ -15,7 +15,7 @@ const NSInteger MTLJSONAdapterErrorInvalidJSONDictionary = 3;
 
 // An exception was thrown and caught.
 #if (defined(DEBUG) && !DEBUG) || !defined(DEBUG)
-static const NSInteger MTLJSONAdapterErrorExceptionThrown = 1;
+const NSInteger MTLJSONAdapterErrorExceptionThrown = 1;
 #endif
 
 // Associated with the NSException that was caught.
@@ -111,7 +111,26 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 		NSString *JSONKeyPath = [self JSONKeyPathForPropertyKey:propertyKey];
 		if (JSONKeyPath == nil) continue;
 
-		id value = [JSONDictionary valueForKeyPath:JSONKeyPath];
+		id value = JSONDictionary;
+		NSArray *JSONKeyPathComponents = [JSONKeyPath componentsSeparatedByString:@"."];
+		for (NSString *itemJSONKeyPathComponent in JSONKeyPathComponents) {
+			if (![value isKindOfClass:NSDictionary.class]) {
+				if (error != NULL) {
+					NSDictionary *userInfo = @{
+						NSLocalizedDescriptionKey: NSLocalizedString(@"Invalid JSON dictionary", @""),
+						NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat:NSLocalizedString(@"%@ could not be parsed because an invalid JSON dictionary was provided for key path \"%@\"", @""), modelClass, JSONKeyPath],
+					};
+
+					*error = [NSError errorWithDomain:MTLJSONAdapterErrorDomain code:MTLJSONAdapterErrorInvalidJSONDictionary userInfo:userInfo];
+				}
+
+				return nil;
+			}
+
+			value = [value valueForKey:itemJSONKeyPathComponent];
+			if (value == nil || value == NSNull.null) break;
+		}
+
 		if (value == nil) continue;
 
 		@try {

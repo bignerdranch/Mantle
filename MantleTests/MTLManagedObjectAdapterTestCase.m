@@ -13,6 +13,8 @@
 
 @interface MTLManagedObjectAdapterTestCase : XCTestCase {
 	NSPersistentStoreCoordinator *persistentStoreCoordinator;
+	NSPersistentStore *store;
+	NSManagedObjectContext *context;
 }
 
 @end
@@ -24,21 +26,93 @@
 	[super setUp];
 
 	NSManagedObjectModel *model = [NSManagedObjectModel mergedModelFromBundles:@[ [NSBundle bundleForClass:self.class] ]];
-
 	XCTAssertNotNil(model);
 
-	persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
+	if (!persistentStoreCoordinator) {
+		persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:model];
+	}
 	XCTAssertNotNil(persistentStoreCoordinator);
-	XCTAssertNotNil([persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:NULL]);
+	
+	store = [persistentStoreCoordinator addPersistentStoreWithType:NSInMemoryStoreType configuration:nil URL:nil options:nil error:NULL];
+	XCTAssertNotNil(store);
+}
+
+- (void)tearDown
+{
+	[context reset];
+	context = nil;
+	
+	XCTAssertTrue([persistentStoreCoordinator removePersistentStore:store error:NULL]);
+}
+
+- (void)testDeadlockOnMainQueueContext
+{
+	NSString *desc = @"should not deadlock on the main thread";
+	
+	context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+	XCTAssertNotNil(context);
+	
+	context.undoManager = nil;
+	context.persistentStoreCoordinator = persistentStoreCoordinator;
+
+	MTLParent *parent = [MTLParent insertInManagedObjectContext:context];
+	XCTAssertNotNil(parent, @"%@", desc);
+
+	parent.string = @"foobar";
+
+	NSError *error = nil;
+	MTLParentTestModel *parentModel = [MTLManagedObjectAdapter modelOfClass:MTLParentTestModel.class fromManagedObject:parent error:&error];
+	XCTAssertTrue([parentModel isKindOfClass:MTLParentTestModel.class], @"%@", desc);
+	XCTAssertNil(error, @"%@", desc);
+}
+
+- (void)testInsertWithFailingChildren
+{
+	NSString *desc = @"should not insert a managed object with children when a child fails serialization";
+
+	context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
+	XCTAssertNotNil(context);
+
+	context.undoManager = nil;
+	context.persistentStoreCoordinator = persistentStoreCoordinator;
+
+	NSEntityDescription *parentEntity = [NSEntityDescription entityForName:@"Parent" inManagedObjectContext:context];
+	XCTAssertNotNil(parentEntity);
+
+	NSEntityDescription *childEntity = [NSEntityDescription entityForName:@"BadChild" inManagedObjectContext:context];
+	XCTAssertNotNil(childEntity);
+
+	MTLParentTestModel *parentModel = [MTLParentTestModel modelWithDictionary:@{
+		@"date": [NSDate date],
+		@"numberString": @"1234",
+		@"requiredString": @"foobar"
+	} error:NULL];
+	XCTAssertNotNil(parentModel);
+
+	NSMutableArray *orderedChildren = [NSMutableArray array];
+
+	for (NSUInteger i = 3; i < 6; i++) {
+		MTLBadChildTestModel *child = [MTLBadChildTestModel modelWithDictionary:@{
+			@"childID": @(i)
+		} error:NULL];
+		XCTAssertNotNil(child);
+
+		[orderedChildren addObject:child];
+	}
+
+	parentModel.orderedChildren = orderedChildren;
+
+	NSError *error = nil;
+	MTLParent *parent = [MTLManagedObjectAdapter managedObjectFromModel:parentModel insertingIntoContext:context error:&error];
+	XCTAssertNil(parent, @"%@", desc);
+	XCTAssertNotNil(error, @"%@", desc);
+	XCTAssertTrue([context save:&error], @"%@", desc);
+	XCTAssertNotNil(error, @"%@", desc);
 }
 
 @end
 
-#pragma mark - With a confined context
-
 @interface MTLConfinedContextManagedObjectAdapterTestCase : MTLManagedObjectAdapterTestCase {
-	NSManagedObjectContext *context;
-
 	NSEntityDescription *parentEntity;
 	NSEntityDescription *childEntity;
 }
@@ -64,63 +138,43 @@
 	XCTAssertNotNil(childEntity);
 }
 
-@end
-
-@interface MTLConfinedContextModelFromManagedObjectAdapterTestCase : MTLConfinedContextManagedObjectAdapterTestCase {
-	MTLParent *parent;
-
-	NSDate *date;
-	NSString *numberString;
-	NSString *requiredString;
-}
-
-@end
-
-@implementation MTLConfinedContextModelFromManagedObjectAdapterTestCase
-
-- (void)setUp
-{
-	[super setUp];
-
-	date = [NSDate date];
-	numberString = @"123";
-	requiredString = @"foobar";
-
-	parent = [MTLParent insertInManagedObjectContext:context];
-	XCTAssertNotNil(parent);
-
-	for (NSUInteger i = 0; i < 3; i++) {
-		MTLChild *child = [MTLChild insertInManagedObjectContext:context];
-		XCTAssertNotNil(child);
-
-		child.childID = @(i);
-		[parent addOrderedChildrenObject:child];
-	}
-
-	for (NSUInteger i = 3; i < 6; i++) {
-		MTLChild *child = [MTLChild insertInManagedObjectContext:context];
-		XCTAssertNotNil(child);
-
-		child.childID = @(i);
-		[parent addUnorderedChildrenObject:child];
-	}
-
-	parent.string = requiredString;
-
-	__block NSError *error = nil;
-	XCTAssertTrue([context save:&error]);
-	XCTAssertNil(error);
-
-	// Make sure that pending changes are picked up too.
-	[parent setValue:@(numberString.integerValue) forKey:@"number"];
-	[parent setValue:date forKey:@"date"];
-}
-
 - (void)testInitializeWithChildren
 {
 	NSString *desc = @"+modelOfClass:fromManagedObject:error: should initialize a MTLParentTestModel with children";
-
+	
+	NSDate *date = [NSDate date];
+	NSString *numberString = @"123";
+	NSString *requiredString = @"foobar";
+	
+	MTLParent *parent = [MTLParent insertInManagedObjectContext:context];
+	XCTAssertNotNil(parent);
+	
+	for (NSUInteger i = 0; i < 3; i++) {
+		MTLChild *child = [MTLChild insertInManagedObjectContext:context];
+		XCTAssertNotNil(child);
+		
+		child.childID = @(i);
+		[parent addOrderedChildrenObject:child];
+	}
+	
+	for (NSUInteger i = 3; i < 6; i++) {
+		MTLChild *child = [MTLChild insertInManagedObjectContext:context];
+		XCTAssertNotNil(child);
+		
+		child.childID = @(i);
+		[parent addUnorderedChildrenObject:child];
+	}
+	
+	parent.string = requiredString;
+	
 	NSError *error = nil;
+	XCTAssertTrue([context save:&error]);
+	XCTAssertNil(error);
+	
+	// Make sure that pending changes are picked up too.
+	[parent setValue:@(numberString.integerValue) forKey:@"number"];
+	[parent setValue:date forKey:@"date"];
+
 	MTLParentTestModel *parentModel = [MTLManagedObjectAdapter modelOfClass:MTLParentTestModel.class fromManagedObject:parent error:&error];
 	XCTAssertTrue([parentModel isKindOfClass:MTLParentTestModel.class], @"%@", desc);
 	XCTAssertNil(error, @"%@", desc);
@@ -150,6 +204,47 @@
 		XCTAssertEqual(child.parent1, parentModel, @"%@", desc);
 		XCTAssertNil(child.parent2, @"%@", desc);
 	}
+}
+
+- (void)testInsertModelObjectFail
+{
+	NSString *desc = @"should return an error if a model object could not be inserted";
+	
+	MTLFailureModel *parentModel = [MTLFailureModel modelWithDictionary:@{
+		@"notSupported": @"foobar"
+	} error:NULL];
+	
+	NSError *error = nil;
+	NSManagedObject *failure = [MTLManagedObjectAdapter managedObjectFromModel:parentModel insertingIntoContext:context error:&error];
+	
+	XCTAssertNil(failure, @"%@", desc);
+	XCTAssertNotNil(error, @"%@", desc);
+}
+
+- (void)testModelObjectAttributeValidationFail
+{
+	NSString *desc = @"should return an error if model doesn't validate for attribute description";
+	
+	MTLParentTestModel *parentModel = [MTLParentTestModel modelWithDictionary:@{} error:NULL];
+	
+	NSError *error = nil;
+	NSManagedObject *failure = [MTLManagedObjectAdapter managedObjectFromModel:parentModel insertingIntoContext:context error:&error];
+	
+	XCTAssertNil(failure, @"%@", desc);
+	XCTAssertNotNil(error, @"%@", desc);
+}
+
+- (void)testModelObjectValidateForInsertFail
+{
+	NSString *desc = @"should return an error if model doesn't validate for insert";
+	
+	MTLParentIncorrectTestModel *parentModel = [MTLParentIncorrectTestModel modelWithDictionary:@{} error:NULL];
+	
+	NSError *error = nil;
+	NSManagedObject *failure = [MTLManagedObjectAdapter managedObjectFromModel:parentModel insertingIntoContext:context error:&error];
+	
+	XCTAssertNil(failure, @"%@", desc);
+	XCTAssertNotNil(error, @"%@", desc);
 }
 
 @end
@@ -250,21 +345,6 @@
 	XCTAssertNil(error, @"%@", desc);
 }
 
-- (void)testInsertModelObjectFail
-{
-	NSString *desc = @"should return an error if a model object could not be inserted";
-
-	MTLFailureModel *failureModel = [MTLFailureModel modelWithDictionary:@{
-		@"notSupported": @"foobar"
-	} error:NULL];
-
-	__block NSError *error = nil;
-	NSManagedObject *failure = [MTLManagedObjectAdapter managedObjectFromModel:failureModel insertingIntoContext:context error:&error];
-
-	XCTAssertNil(failure, @"%@", desc);
-	XCTAssertNotNil(error, @"%@", desc);
-}
-
 - (void)testUniquenessConstraint
 {
 	NSString *desc = @"should respect the uniqueness constraint";
@@ -321,109 +401,6 @@
 	MTLChild *child2Parent2 = parentTwo.orderedChildren[1];
 	XCTAssertEqualObjects(child1Parent2, child1Parent1, @"%@", desc);
 	XCTAssertEqualObjects(child2Parent2, child3Parent1, @"%@", desc);
-}
-
-@end
-
-#pragma mark - With a main context
-
-@interface MTLMainContextManagedObjectAdapterTestCase : MTLManagedObjectAdapterTestCase {
-	NSManagedObjectContext *context;
-}
-
-@end
-
-@implementation MTLMainContextManagedObjectAdapterTestCase
-
-- (void)setUp
-{
-	[super setUp];
-
-	context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-	XCTAssertNotNil(context);
-
-	context.undoManager = nil;
-	context.persistentStoreCoordinator = persistentStoreCoordinator;
-}
-
-- (void)testDeadlockOnMainThread
-{
-	NSString *desc = @"should not deadlock on the main thread";
-
-	MTLParent *parent = [MTLParent insertInManagedObjectContext:context];
-	XCTAssertNotNil(parent, @"%@", desc);
-
-	parent.string = @"foobar";
-
-	NSError *error = nil;
-	MTLParentTestModel *parentModel = [MTLManagedObjectAdapter modelOfClass:MTLParentTestModel.class fromManagedObject:parent error:&error];
-	XCTAssertTrue([parentModel isKindOfClass:MTLParentTestModel.class], @"%@", desc);
-	XCTAssertNil(error, @"%@", desc);
-}
-
-@end
-
-#pragma mark - With a failing child
-
-@interface MTLFailingManagedObjectAdapterTestCase : MTLManagedObjectAdapterTestCase {
-	NSManagedObjectContext *context;
-
-	NSEntityDescription *parentEntity;
-	NSEntityDescription *childEntity;
-	MTLParentTestModel *parentModel;
-}
-
-@end
-
-@implementation MTLFailingManagedObjectAdapterTestCase
-
-- (void)setUp
-{
-	[super setUp];
-
-	context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
-	XCTAssertNotNil(context);
-
-	context.undoManager = nil;
-	context.persistentStoreCoordinator = persistentStoreCoordinator;
-
-	parentEntity = [NSEntityDescription entityForName:@"Parent" inManagedObjectContext:context];
-	XCTAssertNotNil(parentEntity);
-
-	childEntity = [NSEntityDescription entityForName:@"BadChild" inManagedObjectContext:context];
-	XCTAssertNotNil(childEntity);
-
-	parentModel = [MTLParentTestModel modelWithDictionary:@{
-		@"date": [NSDate date],
-		@"numberString": @"1234",
-		@"requiredString": @"foobar"
-	} error:NULL];
-	XCTAssertNotNil(parentModel);
-
-	NSMutableArray *orderedChildren = [NSMutableArray array];
-
-	for (NSUInteger i = 3; i < 6; i++) {
-		MTLBadChildTestModel *child = [MTLBadChildTestModel modelWithDictionary:@{
-			@"childID": @(i)
-		} error:NULL];
-		XCTAssertNotNil(child);
-
-		[orderedChildren addObject:child];
-	}
-
-	parentModel.orderedChildren = orderedChildren;
-}
-
-- (void)testInsertManagedObjectWithChildren
-{
-	NSString *desc = @"should not insert a managed object with children when a child fails serialization";
-
-	NSError *error = nil;
-	MTLParent *parent = [MTLManagedObjectAdapter managedObjectFromModel:parentModel insertingIntoContext:context error:&error];
-	XCTAssertNil(parent, @"%@", desc);
-	XCTAssertNotNil(error, @"%@", desc);
-	XCTAssertTrue([context save:&error], @"%@", desc);
-	XCTAssertNotNil(error, @"%@", desc);
 }
 
 @end

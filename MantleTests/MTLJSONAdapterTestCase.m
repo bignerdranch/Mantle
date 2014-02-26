@@ -88,14 +88,55 @@
 	XCTAssertEqualObjects([MTLJSONAdapter JSONDictionaryFromModel:model], values, @"%@", desc);
 }
 
+- (void)testInvalidKeyPathFromJSON
+{
+	NSString *desc = @"should return nil and error with an invalid key path from JSON";
+	
+	NSDictionary *values = @{
+		@"username": @"foo",
+		@"nested": @"bar",
+		@"count": @"0"
+	};
+	
+	NSError *error = nil;
+	MTLTestModel *model = [MTLJSONAdapter modelOfClass:MTLTestModel.class fromJSONDictionary:values error:&error];
+	XCTAssertNil(model, @"%@", desc);
+	XCTAssertNotNil(error, @"%@", desc);
+	XCTAssertEqual(error.domain, MTLJSONAdapterErrorDomain, @"%@", desc);
+	XCTAssertEqual(error.code, MTLJSONAdapterErrorInvalidJSONDictionary, @"%@", desc);
+}
+
+- (void)testNestedNullFromJSON
+{
+	NSString *desc = @"should initialize without returning any error when using a JSON dictionary with NSNull as value";
+	
+	NSDictionary *values = @{
+		@"username": @"foo",
+		@"nested": NSNull.null,
+		@"count": @"0"
+	};
+
+	NSError *error = nil;
+	MTLTestModel *model = nil;
+	XCTAssertNoThrow(model = [MTLJSONAdapter modelOfClass:MTLTestModel.class fromJSONDictionary:values error:&error], @"%@", desc);
+	XCTAssertNotNil(model, @"%@", desc);
+	XCTAssertNil(error, @"%@", desc);
+	
+	XCTAssertEqualObjects(model.name, @"foo", @"%@", desc);
+	XCTAssertEqual(model.count, (NSUInteger)0, @"%@", desc);
+	XCTAssertNil(model.nestedName, @"%@", desc);
+}
+
 - (void)testNilJSON
 {
+	NSString *desc = @"should return nil and an error with a nil JSON dictionary";
+	
 	NSError *error = nil;
 	MTLJSONAdapter *adapter = [[MTLJSONAdapter alloc] initWithJSONDictionary:nil modelClass:MTLTestModel.class error:&error];
-	XCTAssertNil(adapter, @"should return no adapter for a nil JSON dictionary");
-	XCTAssertNotNil(error, @"should return an error for a nil JSON dictionary");
-	XCTAssertEqual(error.domain, MTLJSONAdapterErrorDomain, @"should return an appropriate error for a nil JSON dictionary");
-	XCTAssertEqual(error.code, MTLJSONAdapterErrorInvalidJSONDictionary, @"should return an appropriate error for a nil JSON dictionary");
+	XCTAssertNil(adapter, @"%@", desc);
+	XCTAssertNotNil(error, @"%@", desc);
+	XCTAssertEqual(error.domain, MTLJSONAdapterErrorDomain, @"%@", desc);
+	XCTAssertEqual(error.code, MTLJSONAdapterErrorInvalidJSONDictionary, @"%@", desc);
 }
 
 - (void)testWrongDataType

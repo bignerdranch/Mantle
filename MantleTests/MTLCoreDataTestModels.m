@@ -43,6 +43,18 @@
 
 @end
 
+@implementation MTLParentIncorrectTestModel
+
++ (NSString *)managedObjectEntityName {
+	return @"Parent";
+}
+
++ (NSDictionary *)managedObjectKeysByPropertyKey {
+	return @{};
+}
+
+@end
+
 @implementation MTLChildTestModel
 
 + (NSString *)managedObjectEntityName {
