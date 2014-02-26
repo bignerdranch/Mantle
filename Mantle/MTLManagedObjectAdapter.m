@@ -16,6 +16,7 @@ const NSInteger MTLManagedObjectAdapterErrorInvalidManagedObjectKey = 4;
 const NSInteger MTLManagedObjectAdapterErrorUnsupportedManagedObjectPropertyType = 5;
 const NSInteger MTLManagedObjectAdapterErrorUnsupportedRelationshipClass = 6;
 const NSInteger MTLManagedObjectAdapterErrorUniqueFetchRequestFailed = 7;
+const NSInteger MTLManagedObjectAdapterErrorUnpersistedManagedObject = 8;
 
 // Performs the given block in the context's queue, if it has one.
 static id performInContext(NSManagedObjectContext *context, id (^block)(void)) {
@@ -66,7 +67,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 // Invoked from
 // +managedObjectFromModel:insertingIntoContext:processedObjects:error: after
 // the receiver's properties have been initialized.
-- (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model insertingIntoContext:(NSManagedObjectContext *)context processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error;
+- (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model updatingManagedObject:(NSManagedObject *)existingManagedObject orInsertingIntoContext:(NSManagedObjectContext *)context processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error ;
 
 // Performs the actual work of serialization. This method is also invoked when
 // processing relationships, to create a new adapter (if needed) to handle them.
@@ -74,7 +75,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 // `processedObjects` is a dictionary mapping MTLModels to the NSManagedObjects
 // that have been created so far. It should remain alive for the full process
 // of serializing the top-level MTLModel.
-+ (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model insertingIntoContext:(NSManagedObjectContext *)context processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error;
++ (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model updatingManagedObject:(NSManagedObject *)managedObject orInsertingIntoContext:(NSManagedObjectContext *)context processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error;
 
 // Looks up the NSValueTransformer that should be used for any attribute that
 // corresponds the given property key.
@@ -293,10 +294,11 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 	return [adapter modelFromManagedObject:managedObject processedObjects:processedObjects error:error];
 }
 
-- (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model insertingIntoContext:(NSManagedObjectContext *)context processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error {
+- (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model updatingManagedObject:(NSManagedObject *)existingManagedObject orInsertingIntoContext:(NSManagedObjectContext *)context processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error {
 	NSParameterAssert(model != nil);
 	NSParameterAssert(context != nil);
 	NSParameterAssert(processedObjects != nil);
+	NSParameterAssert(existingManagedObject != nil || context != nil);
 
 	NSString *entityName = [model.class managedObjectEntityName];
 	NSAssert(entityName != nil, @"%@ returned a nil +managedObjectEntityName", model.class);
@@ -308,47 +310,52 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 	NSAssert(fetchRequestClass != nil, @"CoreData.framework must be linked to use MTLManagedObjectAdapter");
 
 	// If a uniquing predicate is provided, perform a fetch request to guarentee a unique managed object.
-	__block NSManagedObject *managedObject = nil;
-	NSPredicate *uniquingPredicate = [self uniquingPredicateForModel:model];
+	__block NSManagedObject *managedObject = existingManagedObject;
 
-	if (uniquingPredicate != nil) {
-		__block NSError *fetchRequestError = nil;
-		__block BOOL encountedError = NO;
-		managedObject = performInContext(context, ^ id {
-			NSFetchRequest *fetchRequest = [[fetchRequestClass alloc] init];
-			fetchRequest.entity = [entityDescriptionClass entityForName:entityName inManagedObjectContext:context];
-			fetchRequest.predicate = uniquingPredicate;
-			fetchRequest.returnsObjectsAsFaults = NO;
-			fetchRequest.fetchLimit = 1;
+	if (managedObject == nil) {
+		NSPredicate *uniquingPredicate = [self uniquingPredicateForModel:model];
 
-			NSArray *results = [context executeFetchRequest:fetchRequest error:&fetchRequestError];
+		if (uniquingPredicate != nil) {
+			__block NSError *fetchRequestError = nil;
+			__block BOOL encountedError = NO;
+			managedObject = performInContext(context, ^ id {
+				NSFetchRequest *fetchRequest = [[fetchRequestClass alloc] init];
+				fetchRequest.entity = [entityDescriptionClass entityForName:entityName inManagedObjectContext:context];
+				fetchRequest.predicate = uniquingPredicate;
+				fetchRequest.returnsObjectsAsFaults = NO;
+				fetchRequest.fetchLimit = 1;
 
-			if (results == nil) {
-				encountedError = YES;
-				if (error != NULL) {
-					NSString *failureReason = [NSString stringWithFormat:NSLocalizedString(@"Failed to fetch a managed object for uniqing predicate \"%@\".", @""), uniquingPredicate];
-					
-					NSDictionary *userInfo = @{
-						NSLocalizedDescriptionKey: NSLocalizedString(@"Could not serialize managed object", @""),
-						NSLocalizedFailureReasonErrorKey: failureReason,
-					};
-					
-					fetchRequestError = [NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorUniqueFetchRequestFailed userInfo:userInfo];
+				NSArray *results = [context executeFetchRequest:fetchRequest error:&fetchRequestError];
+
+				if (results == nil) {
+					encountedError = YES;
+					if (error != NULL) {
+						NSString *failureReason = [NSString stringWithFormat:NSLocalizedString(@"Failed to fetch a managed object for uniqing predicate \"%@\".", @""), uniquingPredicate];
+
+						NSDictionary *userInfo = @{
+							NSLocalizedDescriptionKey: NSLocalizedString(@"Could not serialize managed object", @""),
+							NSLocalizedFailureReasonErrorKey: failureReason,
+						};
+
+						fetchRequestError = [NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorUniqueFetchRequestFailed userInfo:userInfo];
+					}
+
+					return nil;
 				}
-				
+
+				return results.firstObject;
+			});
+
+			if (encountedError && error != NULL) {
+				*error = fetchRequestError;
 				return nil;
 			}
-
-			return results.firstObject;
-		});
-
-		if (encountedError && error != NULL) {
-			*error = fetchRequestError;
-			return nil;
 		}
 	}
 
-	if (managedObject == nil) managedObject = [entityDescriptionClass insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+	if (managedObject == nil) {
+		managedObject = [entityDescriptionClass insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+	}
 
 	if (managedObject == nil) {
 		if (error != NULL) {
@@ -397,7 +404,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 			return YES;
 		};
 
-		NSManagedObject * (^objectForRelationshipFromModel)(id) = ^ id (id model) {
+		NSManagedObject * (^objectForRelationshipFromModel)(id, NSManagedObject *) = ^ id (id model, NSManagedObject *existingValue) {
 			if (![model isKindOfClass:MTLModel.class] || ![model conformsToProtocol:@protocol(MTLManagedObjectSerializing)]) {
 				NSString *failureReason = [NSString stringWithFormat:NSLocalizedString(@"Property of class %@ cannot be encoded into an NSManagedObject.", @""), [model class]];
 
@@ -411,7 +418,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 				return nil;
 			}
 
-			return [self.class managedObjectFromModel:model insertingIntoContext:context processedObjects:processedObjects error:&tmpError];
+			return [self.class managedObjectFromModel:model updatingManagedObject:existingValue orInsertingIntoContext:context processedObjects:processedObjects error:&tmpError];
 		};
 
 		BOOL (^serializeRelationship)(NSRelationshipDescription *) = ^(NSRelationshipDescription *relationshipDescription) {
@@ -439,16 +446,17 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 				}
 
 				for (MTLModel *model in value) {
-					NSManagedObject *nestedObject = objectForRelationshipFromModel(model);
-					if (nestedObject == nil) return NO;
+					NSManagedObject *nestedObject = objectForRelationshipFromModel(model, nil);
+					if (nestedObject == nil && tmpError) return NO;
 
 					[relationshipCollection addObject:nestedObject];
 				}
 
 				[managedObject setValue:relationshipCollection forKey:managedObjectKey];
 			} else {
-				NSManagedObject *nestedObject = objectForRelationshipFromModel(value);
-				if (nestedObject == nil) return NO;
+				NSManagedObject *oldNestedObject = [managedObject valueForKey:managedObjectKey];
+				NSManagedObject *nestedObject = objectForRelationshipFromModel(value, oldNestedObject);
+				if (nestedObject == nil && tmpError) return NO;
 
 				[managedObject setValue:nestedObject forKey:managedObjectKey];
 			}
@@ -524,16 +532,36 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 	CFMutableDictionaryRef processedObjects = CFDictionaryCreateMutable(NULL, 0, &keyCallbacks, &kCFTypeDictionaryValueCallBacks);
 	if (processedObjects == NULL) return nil;
 
-	id ret = [self managedObjectFromModel:model insertingIntoContext:context processedObjects:processedObjects error:error];;
+
+	id ret = [self managedObjectFromModel:model updatingManagedObject:nil orInsertingIntoContext:context processedObjects:processedObjects error:error];
+	CFRelease(processedObjects);
+
+	return ret;
+}
+
++ (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model updatingManagedObject:(NSManagedObject *)managedObject error:(NSError **)error {
+	NSParameterAssert(managedObject.managedObjectContext);
+
+	NSManagedObjectContext *context = managedObject.managedObjectContext;
+
+	CFDictionaryKeyCallBacks keyCallbacks = kCFTypeDictionaryKeyCallBacks;
+
+	// Compare MTLModel keys using pointer equality, not -isEqual:.
+	keyCallbacks.equal = NULL;
+
+	CFMutableDictionaryRef processedObjects = CFDictionaryCreateMutable(NULL, 0, &keyCallbacks, &kCFTypeDictionaryValueCallBacks);
+	if (processedObjects == NULL) return nil;
+
+	id ret = [self managedObjectFromModel:model updatingManagedObject:managedObject orInsertingIntoContext:context processedObjects:processedObjects error:error];
 
 	CFRelease(processedObjects);
 
 	return ret;
 }
 
-+ (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model insertingIntoContext:(NSManagedObjectContext *)context processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error {
++ (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model updatingManagedObject:(NSManagedObject *)managedObject orInsertingIntoContext:(NSManagedObjectContext *)context processedObjects:(CFMutableDictionaryRef)processedObjects error:(NSError **)error {
 	NSParameterAssert(model != nil);
-	NSParameterAssert(context != nil);
+	NSParameterAssert(managedObject != nil || context != nil);
 	NSParameterAssert(processedObjects != nil);
 
 	const void *existingManagedObject = CFDictionaryGetValue(processedObjects, (__bridge void *)model);
@@ -542,7 +570,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 	}
 
 	MTLManagedObjectAdapter *adapter = [[self alloc] initWithModelClass:model.class];
-	return [adapter managedObjectFromModel:model insertingIntoContext:context processedObjects:processedObjects error:error];
+	return [adapter managedObjectFromModel:model updatingManagedObject:managedObject orInsertingIntoContext:context processedObjects:processedObjects error:error];
 }
 
 - (NSValueTransformer *)entityAttributeTransformerForKey:(NSString *)key {

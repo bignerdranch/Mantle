@@ -175,4 +175,12 @@ extern const NSInteger MTLManagedObjectAdapterErrorUnsupportedRelationshipClass;
 //           serialization or insertion.
 + (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model insertingIntoContext:(NSManagedObjectContext *)context error:(NSError **)error;
 
+// Updates an NSManagedObject by serializing a MTLModel.
+//
+// model         - The model object to update using. Must not me nil.
+// managedObject - The managed object to update. Must not be nil.
+// error         - If not NULL, this may be set to an error that occurs during
+//                 updating or serialization.
++ (id)managedObjectFromModel:(MTLModel<MTLManagedObjectSerializing> *)model updatingManagedObject:(NSManagedObject *)managedObject error:(NSError **)error;
+
 @end
