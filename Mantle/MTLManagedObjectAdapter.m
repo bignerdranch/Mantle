@@ -400,7 +400,10 @@ static id performInContext(NSManagedObjectContext *context, id (^block)(void)) {
 		};
 
 		NSManagedObject * (^objectForRelationshipFromModel)(id, NSManagedObject *) = ^ id (id model, NSManagedObject *existingValue) {
-			if (![model isKindOfClass:MTLModel.class] || ![model conformsToProtocol:@protocol(MTLManagedObjectSerializing)]) {
+			if (!model) {
+				tmpError = nil;
+				return nil;
+			} else if (![model isKindOfClass:MTLModel.class] || ![model conformsToProtocol:@protocol(MTLManagedObjectSerializing)]) {
 				NSString *failureReason = [NSString stringWithFormat:NSLocalizedString(@"Property of class %@ cannot be encoded into an NSManagedObject.", @""), [model class]];
 
 				NSDictionary *userInfo = @{
@@ -417,8 +420,6 @@ static id performInContext(NSManagedObjectContext *context, id (^block)(void)) {
 		};
 
 		BOOL (^serializeRelationship)(NSRelationshipDescription *) = ^(NSRelationshipDescription *relationshipDescription) {
-			if (value == nil) return YES;
-
 			if ([relationshipDescription isToMany]) {
 				if (![value conformsToProtocol:@protocol(NSFastEnumeration)]) {
 					NSString *failureReason = [NSString stringWithFormat:NSLocalizedString(@"Property of class %@ cannot be encoded into a to-many relationship.", @""), [value class]];
