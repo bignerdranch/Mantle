@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		DB02794C182DE56300EFF41D /* libMantle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DBCBBF3B182D8F7C0052D6D7 /* libMantle.a */; };
+		DB2C87B8192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.h in Headers */ = {isa = PBXBuildFile; fileRef = DB2C87B6192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.h */; };
+		DB2C87B9192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.m in Sources */ = {isa = PBXBuildFile; fileRef = DB2C87B7192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.m */; };
+		DB2C87BA192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.m in Sources */ = {isa = PBXBuildFile; fileRef = DB2C87B7192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.m */; };
 		DBCBBF3F182D8F7C0052D6D7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBCBBF3E182D8F7C0052D6D7 /* Foundation.framework */; };
 		DBCBBF44182D8F7C0052D6D7 /* Mantle.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBCBBF43182D8F7C0052D6D7 /* Mantle.h */; };
 		DBCBBF4D182D8F7C0052D6D7 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBCBBF4C182D8F7C0052D6D7 /* XCTest.framework */; };
@@ -98,6 +101,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DB2C87B6192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDictionary+MTLJSONKeyPath.h"; path = "../../../../Desktop/NSDictionary+MTLJSONKeyPath.h"; sourceTree = "<group>"; };
+		DB2C87B7192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSDictionary+MTLJSONKeyPath.m"; path = "../../../../Desktop/NSDictionary+MTLJSONKeyPath.m"; sourceTree = "<group>"; };
 		DBCBBF3B182D8F7C0052D6D7 /* libMantle.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMantle.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBCBBF3E182D8F7C0052D6D7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		DBCBBF42182D8F7C0052D6D7 /* Mantle-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Mantle-Prefix.pch"; sourceTree = "<group>"; };
@@ -326,6 +331,8 @@
 			children = (
 				DBCBBFBB182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.h */,
 				DBCBBFBC182D90710052D6D7 /* NSDictionary+MTLManipulationAdditions.m */,
+				DB2C87B6192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.h */,
+				DB2C87B7192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.m */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -337,6 +344,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DB2C87B8192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.h in Headers */,
 				DBCBBFB3182D904A0052D6D7 /* MTLValueTransformer.h in Headers */,
 				DBCBBFAA182D903C0052D6D7 /* MTLJSONAdapter.h in Headers */,
 				DBCBBFA2182D902E0052D6D7 /* MTLPropertyAttributes.h in Headers */,
@@ -496,6 +504,7 @@
 				DBCBBFAE182D903C0052D6D7 /* MTLManagedObjectAdapter.m in Sources */,
 				DBCBBFB4182D904A0052D6D7 /* MTLValueTransformer.m in Sources */,
 				DBCBBFA3182D902E0052D6D7 /* MTLPropertyAttributes.m in Sources */,
+				DB2C87B9192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -529,6 +538,7 @@
 				DBCBBFAF182D903C0052D6D7 /* MTLManagedObjectAdapter.m in Sources */,
 				DBCBBFB5182D904A0052D6D7 /* MTLValueTransformer.m in Sources */,
 				DBCBBFA4182D902E0052D6D7 /* MTLPropertyAttributes.m in Sources */,
+				DB2C87BA192A4DF60073C5C5 /* NSDictionary+MTLJSONKeyPath.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
